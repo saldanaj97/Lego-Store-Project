@@ -1,6 +1,6 @@
 from pytabby import Menu
+import pyfiglet
 import menu_options
-
 
 def print_help():
     help_text = (
@@ -23,9 +23,11 @@ def print_help():
 def main_loop(): 
     # Logic for the app
     menu = Menu(menu_options.CONFIG)
+    store_name = pyfiglet.figlet_format("The Lego Store")
     quit_early = False
     while not quit_early:
         # Start up the menu
+        print(store_name)
         result = menu.run()
         if result[1] == "storeMode":
             print(1)
