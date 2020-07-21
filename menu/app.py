@@ -1,6 +1,8 @@
 from pytabby import Menu
 import pyfiglet
-import menu_options
+import modes
+import menu_configs
+import subprocess
 
 def print_help():
     help_text = (
@@ -22,17 +24,16 @@ def print_help():
 
 def main_loop(): 
     # Logic for the app
-    menu = Menu(menu_options.CONFIG)
+    menu = Menu(menu_configs.MAIN_MENU_CONFIG)
     store_name = pyfiglet.figlet_format("The Lego Store")
     quit_early = False
     while not quit_early:
-        # Start up the menu
         print(store_name)
-        result = menu.run()
+        result = menu.run(message={"store": "You are now in store mode.", "online": "You are now in online mode."})
         if result[1] == "storeMode":
-            print(1)
+            print("Store Mode")
         elif result[1] == "onlineMode":
-            print_help()
+            print("Online mode")
         elif result[1] == "help":
             print_help()
         elif result[1] == "quit":
