@@ -1,8 +1,7 @@
 from pytabby import Menu
-import pyfiglet
-import modes
 import menu_configs
-import subprocess
+import modes
+import pyfiglet
 
 def print_help():
     help_text = (

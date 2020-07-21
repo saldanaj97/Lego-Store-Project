@@ -9,7 +9,7 @@ cnx = pyodbc.connect(
     driver='/usr/local/lib/libtdsodbc.so'
 )
 cursor = cnx.cursor()
-cursor.execute('SELECT * FROM legoStore.dbo.test')
+cursor.execute('SELECT * FROM legoStore.dbo.individual_lego_bricks')
 
 for row in cursor:
     print(row)
