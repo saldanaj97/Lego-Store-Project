@@ -78,8 +78,14 @@ MAIN_MENU_CONFIG = {
                 },
                 {
                     "item_choice_displayed": "3",
-                    "item_description": "View Purchase History",
+                    "item_description": "Purchase Items",
                     "item_inputs": ["3"],
+                    "item_returns": "purchaseItems"
+                },
+                {
+                    "item_choice_displayed": "4",
+                    "item_description": "View Purchase History",
+                    "item_inputs": ["4"],
                     "item_returns": "purchaseHistory"
                 },
                 {

@@ -34,7 +34,7 @@ def main_loop():
     print_help()
 
     # Start the main menu loop
-    while not quit_early:
+    while not quit_early: 
         print(store_name)
         result = menu.run(message={"store": "You are now in store mode.", "online": "You are now in online mode."})
         #print(result)
@@ -44,6 +44,8 @@ def main_loop():
             dbFunctions.browse()
         elif result[0] == "online" and result[1] == "search":
             dbFunctions.search()
+        elif result[0] == "online" and result[1] == "purchaseItems":
+            dbFunctions.purchase()
         elif result[1] == "quit":
             quit_early = True
 
