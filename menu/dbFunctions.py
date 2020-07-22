@@ -74,10 +74,47 @@ def get_details(characteristic):
 # Function that builds the select query that displays all columns in a table
 def select_query_builder(query_from, description):
     if query_from == 'SetName':
-        query = ('SELECT * FROM legostore.dbo.lego_brick_sets WHERE ' + query_from + " = " + '\'' + description + '\'')
+        query = ('SELECT * FROM legostore.dbo.lego_brick_sets WHERE ' + query_from + " = " + '\'' + description)
     else:
-        query = ('SELECT * FROM legostore.dbo.individual_lego_bricks WHERE ' + query_from + " = " + '\'' + description + '\'')
+        query = ('SELECT * FROM legostore.dbo.individual_lego_bricks WHERE ' + query_from + " = " + '\'' + description)
     return query
+
+# Function to check if the requested item is in stock, if item is not in stock, return new quantity request
+def in_stock_check(ID, quantity_requested, brick_or_set):
+    # Conditional to run the check on the correct table
+    if brick_or_set == 'bricks' or brick_or_set == 'brick':
+        # Grab the quantity available from the database
+        cursor.execute('SELECT BrickQuantity FROM legostore.dbo.individual_lego_bricks WHERE BrickID = ' + str(ID))
+        result = cursor.fetchall()
+        query_result = [list(i) for i in result]
+        quantity_available = query_result[0][0]
+    else:
+        # Grab the quantity available from the database
+        cursor.execute('SELECT SetQuantity FROM legostore.dbo.lego_brick_sets WHERE setID = ' + str(ID))
+        result = cursor.fetchall()
+        query_result = [list(i) for i in result]
+        quantity_available = query_result[0][0]
+
+    # Check if the quantity that has been requested is available
+    while int(quantity_requested) > quantity_available:
+        print("Sorry we only have " + str(quantity_available) + " in stock currently. ")
+        buy_all = input('Would you like to purchase all of those that are in stock? y or n? ')
+        buy_all.lower()
+        if buy_all == 'y':
+            quantity_requested = quantity_available
+            print('Added to cart')
+        else:
+            quantity_requested = input('How many would you like to buy? ')
+    
+
+    return quantity_requested
+
+# Function that builds the update query when a user buys an individual brick
+#def subtract_from_brick_inventory(ID, quantity_requested):
+    
+
+#def subtract_from_set_inventory(ID, quantity):
+    #return query
 
 # Function to browse the current inventory
 def browse():
@@ -117,17 +154,6 @@ def search():
 
 # Function that will be used when a user chooses to make a purchase
 def purchase():
-    # Help message for buying individual bricks
-    brick_help_message = (
-        "\n\nType in one of the options listed below to get started purchasing.\n"
-        "- Brick ID\n- Brick Size\n- Brick Color\n- Brick Type\n"
-    )
-
-    set_help_message = (
-        "\n\nWhat would you like to buy? Type in one of the options listed below to get started.\n"
-        "- Set Name\n- Set Piece Count"
-    )
-
     # Make a 2D list in the form [[itemID, Quantity], [itemID, Quantity]] for MAX 50 items
     blocks_cart = [([0] * 2) for row in range(50)]
 
@@ -138,20 +164,23 @@ def purchase():
     buyMore = True
     i = 0
     j = 0
+
     while buyMore: 
-        brickOrSet = input('First, are you looking to buy individual bricks or a set? ')
+        brickOrSet = input('Are you looking to buy individual bricks or a set? ')
         brickOrSet.lower()
         if brickOrSet == 'bricks' or brickOrSet == 'brick':
             show_all_blocks()
             print('Above is our current inventory of individual bricks')
             blocks_cart[i][0] = input('Please enter the brick ID of the item you\'d like to purchase: ')
             blocks_cart[i][1] = input('And the quantity you want to purchase: ')
+            blocks_cart[i][1] = in_stock_check(blocks_cart[i][0], blocks_cart[i][1], brickOrSet) # Check if in stock, if not update quantity
             i += 1
         elif brickOrSet == 'sets' or brickOrSet == 'set':
             show_all_sets()
             print('Above is our current inventory of sets')
             sets_cart[j][0] = input('Please enter the set ID of the item you\'d like to purchase: ')
             sets_cart[j][1] = input('And the quantity you want to purchase: ')
+            sets_cart[j][1] = in_stock_check(sets_cart[j][0], sets_cart[j][1], brickOrSet) # Check if in stock, if not update quantity
             j += 1
         else:
             print('Please enter a valid input. Either \'bricks\' or \'sets\' are accepted. ')
