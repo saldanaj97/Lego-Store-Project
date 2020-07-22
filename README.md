@@ -1,5 +1,7 @@
 # Lego Store Project
-This app is used to manage a lego store.Employees can select the store mode option and which will require
+This app is used to manage a lego store. 
+
+Employees can select the store mode option and which will require
 the user to login to be able to access the options for store mode such as
    - Selling an item
    - Managing Orders
