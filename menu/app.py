@@ -1,6 +1,5 @@
 from pytabby import Menu
 import menu_configs
-import modes
 import pyfiglet
 import dbFunctions
 
@@ -30,6 +29,11 @@ def main_loop():
     menu = Menu(menu_configs.MAIN_MENU_CONFIG)
     store_name = pyfiglet.figlet_format("The Lego Store")
     quit_early = False
+
+    # Display help text so user knows how to use the program 
+    print_help()
+
+    # Start the main menu loop
     while not quit_early:
         print(store_name)
         result = menu.run(message={"store": "You are now in store mode.", "online": "You are now in online mode."})
