@@ -3,6 +3,7 @@ import menu_configs
 import pyfiglet
 import dbFunctions
 
+# Help text with instructions on how to use the app 
 def print_help():
     help_text = (
         "This app is used to manage a lego store.\n\nEmployees can select the store mode option and which will require "
@@ -18,11 +19,10 @@ def print_help():
 
         "To get to store or online mode type in 'store' or 'online' and then you will be presented with options for that mode. \n\n"
         "In order to make a selection, enter the number of the option that contains the desired selection. \n\n"
-        "To get out of the current mode, type 'main menu' from either mode and then type 'q' to quit the program. \n"
+        "To get out of the current mode, type 'main menu' from either mode and/or just type 'q' to quit the program. \n"
 
     )
     print(help_text)
-
 
 def main_loop(): 
     # Logic for the app
@@ -42,6 +42,8 @@ def main_loop():
             print_help()
         elif result[0] == "online" and result[1] == "browse":
             dbFunctions.browse()
+        elif result[0] == "online" and result[1] == "search":
+            dbFunctions.search()
         elif result[1] == "quit":
             quit_early = True
 

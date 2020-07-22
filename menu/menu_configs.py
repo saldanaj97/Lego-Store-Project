@@ -52,6 +52,12 @@ MAIN_MENU_CONFIG = {
                     "item_inputs": ["h"],
                     "item_returns": "help"
                 },
+                {
+                    "item_choice_displayed": "q",
+                    "item_description": "Quit Program",
+                    "item_inputs": ["q"],
+                    "item_returns": "quit"
+                }
             ]   
         },
         {
@@ -82,6 +88,12 @@ MAIN_MENU_CONFIG = {
                     "item_inputs": ["h"],
                     "item_returns": "help"
                 },
+                {
+                    "item_choice_displayed": "q",
+                    "item_description": "Quit Program",
+                    "item_inputs": ["q"],
+                    "item_returns": "quit"
+                }
             ]   
         }
     ]
