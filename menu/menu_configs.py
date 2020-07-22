@@ -11,18 +11,6 @@ MAIN_MENU_CONFIG = {
             "items": 
             [
                 {
-                    "item_choice_displayed": "1",
-                    "item_description": "Store Mode",
-                    "item_inputs": ["1"],
-                    "item_returns": "storeMode"
-                },
-                {
-                    "item_choice_displayed": "2",
-                    "item_description": "Online Mode",
-                    "item_inputs": ["2"],
-                    "item_returns": "onlineMode"
-                },
-                {
                     "item_choice_displayed": "h",
                     "item_description": "Help",
                     "item_inputs": ["h"],
@@ -59,11 +47,11 @@ MAIN_MENU_CONFIG = {
                     "item_returns": "DBMgmt"
                 },
                 {
-                    "item_choice_displayed": "4",
-                    "item_description": "Go back",
-                    "item_inputs": ["4"],
-                    "item_returns": "back"
-                }
+                    "item_choice_displayed": "h",
+                    "item_description": "Help",
+                    "item_inputs": ["h"],
+                    "item_returns": "help"
+                },
             ]   
         },
         {
@@ -89,11 +77,11 @@ MAIN_MENU_CONFIG = {
                     "item_returns": "purchaseHistory"
                 },
                 {
-                    "item_choice_displayed": "4",
-                    "item_description": "Go back",
-                    "item_inputs": ["4"],
-                    "item_returns": "back"
-                }
+                    "item_choice_displayed": "h",
+                    "item_description": "Help",
+                    "item_inputs": ["h"],
+                    "item_returns": "help"
+                },
             ]   
         }
     ]

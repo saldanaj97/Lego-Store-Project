@@ -2,6 +2,7 @@ from pytabby import Menu
 import menu_configs
 import modes
 import pyfiglet
+import dbFunctions
 
 def print_help():
     help_text = (
@@ -16,7 +17,10 @@ def print_help():
         "   - Searching for a specific item\n"
         "   - Checking puchase history\n\n"
 
-        "In order to make a selection, enter the number of the option that contains the desired selection. \n"
+        "To get to store or online mode type in 'store' or 'online' and then you will be presented with options for that mode. \n\n"
+        "In order to make a selection, enter the number of the option that contains the desired selection. \n\n"
+        "To get out of the current mode, type 'main menu' from either mode and then type 'q' to quit the program. \n"
+
     )
     print(help_text)
 
@@ -29,12 +33,11 @@ def main_loop():
     while not quit_early:
         print(store_name)
         result = menu.run(message={"store": "You are now in store mode.", "online": "You are now in online mode."})
-        if result[1] == "storeMode":
-            print("Store Mode")
-        elif result[1] == "onlineMode":
-            print("Online mode")
-        elif result[1] == "help":
+        #print(result)
+        if result[1] == "help":
             print_help()
+        elif result[0] == "online" and result[1] == "browse":
+            dbFunctions.browse()
         elif result[1] == "quit":
             quit_early = True
 

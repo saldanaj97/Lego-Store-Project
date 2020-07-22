@@ -14,6 +14,7 @@ CREATE TABLE lego_brick_sets (
     SetID int NOT NULL,
     SetName varchar(255) NOT NULL,
     SetPieceCount int,
+    SetQuantity int
     PRIMARY KEY(SetID)
 );
 
@@ -22,8 +23,8 @@ CREATE TABLE brick_set_pieces (
     SetID int NOT NULL,
     BrickID int NOT NULL, 
     BrickCount int NOT NULL,
-    BrickSize varchar(4) NOT NULL
+    BrickSize varchar(255) NOT NULL
 );
 
-SELECT * FROM individual_lego_bricks;
+SELECT * FROM brick_set_pieces;
 

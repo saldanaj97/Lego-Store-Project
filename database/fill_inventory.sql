@@ -1,4 +1,4 @@
--- Fill the individual brick inventories
+-- FILL INDIVIDUAL BRICK INVENTORIES
 -- 1x1 Brick
 INSERT INTO individual_lego_bricks (BrickID, BrickSize, BrickColor, BrickPrice, BrickQuantity, BrickType)
 VALUES ('00001', '1x1', 'Red', '3.00', '25000', 'Brick');
@@ -193,3 +193,41 @@ VALUES ('00051', '1x3', 'Green', '3.50', '25000', 'Brick')
 
 INSERT INTO individual_lego_bricks (BrickID, BrickSize, BrickColor, BrickPrice, BrickQuantity, BrickType)
 VALUES ('00052', '1x3', 'Yellow', '3.50', '25000', 'Brick')
+
+-- FILL BRICK SETS
+-- SET 1
+INSERT INTO lego_brick_sets (SetID, SetName, SetPieceCount, SetQuantity)
+VALUES ('100001', 'Tokyo Set', '5470', '2')
+
+-- SET 2
+INSERT INTO lego_brick_sets (SetID, SetName, SetPieceCount, SetQuantity)
+VALUES ('100002', 'Paris Set', '8780', '2')
+
+-- SET 3
+INSERT INTO lego_brick_sets (SetID, SetName, SetPieceCount, SetQuantity)
+VALUES ('100003', 'Italy Set', '7770', '2')
+
+-- SET 4
+INSERT INTO lego_brick_sets (SetID, SetName, SetPieceCount, SetQuantity)
+VALUES ('100004', 'Mexico Set', '8822', '2')
+
+-- SET 5
+INSERT INTO lego_brick_sets (SetID, SetName, SetPieceCount, SetQuantity)
+VALUES ('100005', 'New York Set', '10293', '2')
+
+-- SET 6
+INSERT INTO lego_brick_sets (SetID, SetName, SetPieceCount, SetQuantity)
+VALUES ('100007', 'Toronto Set', '10982', '2')
+
+-- FILL THE SETS WITH THEIR INDIVIDUAL PIECES
+-- SET 1
+INSERT INTO brick_set_pieces (SetID, BrickID, BrickCount, BrickSize)
+VALUES ('100001', '00041', '10', '2x8 Plate')
+
+INSERT INTO brick_set_pieces (SetID, BrickID, BrickCount, BrickSize)
+VALUES ('100001', '00037', '3200', '2x4 Brick')
+
+INSERT INTO brick_set_pieces (SetID, BrickID, BrickCount, BrickSize)
+VALUES ('100001', '00030', '2663', '2x3 Brick')
+
+
