@@ -4,6 +4,7 @@ the user to login to be able to access the options for store mode such as
    - Selling an item
    - Managing Orders
    - Managing the inventory database
+   
 Users can select online mode which will only require a login/account creation for ordering items 
 and checking purchase history. Online mode functions include
    - Browsing inventory
