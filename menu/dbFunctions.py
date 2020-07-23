@@ -23,23 +23,27 @@ unformatted_cart = []
 
 # Function to authenticate both users and employees with the database
 def user_auth(info):
+    # Set the logged in bool to false since user is not yet logged in and make the currrent user's id a global var so we can access it in other functions
     logged_in = False
+    global CURRENT_USER_ID
 
     # Query the correct table based on the type of user 
     if info[0] == 'employee':
-        cursor.execute('SELECT * FROM legoStore.dbo.employees WHERE EmployeeID = ' + '\'' + info[1] + '\'' + 'AND EmpPassword = ' + '\'' + info[2] + '\'')
+        cursor.execute('SELECT EmployeeID FROM legoStore.dbo.employees WHERE EmployeeID = ' + '\'' + info[1] + '\'' + 'AND EmpPassword = ' + '\'' + info[2] + '\'')
         query_result = cursor.fetchall()
         user = [list(i) for i in query_result]
         if not user:
             print('\nAccount with those credentials not found. Please try again. \n')
             return False
     elif info[0] == 'customer':
-        cursor.execute('SELECT * FROM legoStore.dbo.customer WHERE Email = ' + '\'' + info[1] + '\'' + 'AND UserPassword = ' + '\'' + info[2] + '\'')
+        cursor.execute('SELECT CustomerID FROM legoStore.dbo.customer WHERE Email = ' + '\'' + info[1] + '\'' + 'AND UserPassword = ' + '\'' + info[2] + '\'')
         query_result = cursor.fetchall()
         user = [list(i) for i in query_result]
         if not user:
             print('\nAccount with those credentials not found. Please try again. \n')
             return False
+        else:
+            CURRENT_USER_ID = user[0][0]
 
     # If we haven't returned back to home, the user has successfully logged in 
     print("Successfully logged in. ")

@@ -60,6 +60,7 @@ def main_loop():
     # Prompt the user to login or register 
     print(store_name)
     has_account = input('Do you have an account with us? y or n? (You will need one to use our service) ')
+    has_account.lower()
     if has_account == 'y':
         login_prompt()
     elif has_account == 'n':
@@ -73,9 +74,16 @@ def main_loop():
     while not quit_early: 
         print(store_name)
         result = menu.run(message={"store": "You are in store mode.", "online": "You are in online mode."})
-        #print(result)
         if result[1] == "help":
             print_help()
+        elif result[0] == "store" and result[1] == "sell" and INFO[0] == 'employee':
+            print('Sell')
+        elif result[0] == "store" and result[1] == "DBMgmt" and INFO[0] == 'employee':
+            print('DB Management')
+        elif result[0] == "store" and result[1] == "sell" and INFO[0] != 'employee':
+            print('YOU MUST BE LOGGED IN AS AN EMPLOYEE TO ACCESS THIS FEATURE')
+        elif result[0] == "store" and result[1] == "DBMgmt" and INFO[0] != 'employee':
+            print('YOU MUST BE LOGGED IN AS AN EMPLOYEE TO ACCESS THIS FEATURE')
         elif result[0] == "online" and result[1] == "browse":
             dbFunctions.browse()
         elif result[0] == "online" and result[1] == "search":

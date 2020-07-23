@@ -36,14 +36,8 @@ MAIN_MENU_CONFIG = {
                 },
                 {
                     "item_choice_displayed": "2",
-                    "item_description": "Order Management",
-                    "item_inputs": ["2"],
-                    "item_returns": "orderMgmt"
-                },
-                {
-                    "item_choice_displayed": "3",
                     "item_description": "Database Management",
-                    "item_inputs": ["3"],
+                    "item_inputs": ["2"],
                     "item_returns": "DBMgmt"
                 },
                 {
