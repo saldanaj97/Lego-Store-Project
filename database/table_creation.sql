@@ -26,5 +26,40 @@ CREATE TABLE brick_set_pieces (
     BrickSize varchar(255) NOT NULL
 );
 
-SELECT * FROM brick_set_pieces;
+CREATE TABLE customer (
+    CustomerID int NOT NULL,
+    FirstName varchar(255) NOT NULL, 
+    LastName varchar(255) NOT NULL,
+    PhoneNumber varchar(255) NOT NULL, 
+    Email varchar (255) NOT NULL, 
+    HomeAddress varchar(255) NOT NULL,
+    PRIMARY KEY(CustomerID)
+)
 
+CREATE TABLE orders (
+    OrderID int NOT NULL,
+    CustomerID int NOT NULL, 
+    PRIMARY KEY(OrderID)
+)
+
+CREATE TABLE order_items (
+    OrderID int NOT NULL,
+    ItemID int, 
+    Quantity int, 
+    Price int, 
+    PRIMARY KEY(OrderID, ItemId)
+)
+
+CREATE TABLE employees (
+    EmployeeID int NOT NULL, 
+    FirstName varchar(255),
+    LastName varchar(255),
+    Email varchar(255),
+    PRIMARY KEY(EmployeeID)
+)
+
+SELECT * FROM brick_set_pieces;
+SELECT * FROM customer;
+SELECT * FROM orders;
+SELECT * FROM order_items;
+SELECT * FROM employees;
