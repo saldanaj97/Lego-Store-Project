@@ -26,6 +26,20 @@ CREATE TABLE brick_set_pieces (
     BrickSize varchar(255) NOT NULL
 );
 
+CREATE TABLE items (
+    ItemID int NOT NULL,
+    BrickSize varchar(4),
+    BrickColor varchar(10),
+    BrickQuantity int,
+    BrickType VARCHAR(255),
+    ItemType varchar(10) NOT NULL, 
+    SetName varchar(255),
+    SetPieceCount int, 
+    SetQuantity int,
+    ItemPrice DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY(ItemID)
+)
+
 CREATE TABLE customer (
     CustomerID int NOT NULL,
     FirstName varchar(255) NOT NULL, 
@@ -39,7 +53,8 @@ CREATE TABLE customer (
 CREATE TABLE orders (
     OrderID int NOT NULL,
     CustomerID int NOT NULL, 
-    PRIMARY KEY(OrderID)
+    PRIMARY KEY(OrderID),
+    FOREIGN KEY(CustomerID) REFERENCES customer(CustomerID) ON DELETE CASCADE ON UPDATE CASCADE
 )
 
 CREATE TABLE order_items (
@@ -47,7 +62,9 @@ CREATE TABLE order_items (
     ItemID int, 
     Quantity int, 
     Price int, 
-    PRIMARY KEY(OrderID, ItemId)
+    PRIMARY KEY(OrderID, ItemId),
+    FOREIGN KEY(OrderID) REFERENCES orders (OrderID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(ItemID) REFERENCES items(ItemID) ON DELETE CASCADE ON UPDATE CASCADE
 )
 
 CREATE TABLE employees (
@@ -58,6 +75,7 @@ CREATE TABLE employees (
     PRIMARY KEY(EmployeeID)
 )
 
+SELECT * FROM items;
 SELECT * FROM brick_set_pieces;
 SELECT * FROM customer;
 SELECT * FROM orders;
