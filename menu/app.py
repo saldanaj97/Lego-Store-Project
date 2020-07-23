@@ -6,7 +6,7 @@ import dbFunctions
 # Help text with instructions on how to use the app 
 def print_help():
     help_text = (
-        "This app is used to manage a lego store.\n\nEmployees can select the store mode option and which will require "
+        "\n\nThis app is used to manage a lego store.\n\nEmployees can select the store mode option and which will require "
         "the user to login to be able to access the options for store mode such as\n"
         "   - Selling an item\n"
         "   - Managing Orders\n"
@@ -24,11 +24,47 @@ def print_help():
     )
     print(help_text)
 
+
+# Info will hold the userType, id and the password in repsective indicies ie. [UserType, ID, Passwd]
+INFO = [0,0,0]
+
+# Function that prompts the user to login and runs the user authentication when login info has been entered
+def login_prompt():
+    IS_LOGGED_IN = False
+
+    # Require the user to login and check if the login is valid
+    print('\n****** Login ******\n')
+    INFO[0] = input('Employee or Customer? ')
+    while IS_LOGGED_IN == False:
+        INFO[0].lower()
+        if INFO[0] == 'employee':
+            INFO[1] = input('Employee ID: ')
+            INFO[2] = input('Password: ')
+            IS_LOGGED_IN = dbFunctions.user_auth(INFO)
+        elif INFO[0] == 'customer':
+            INFO[1] = input('Email: ')
+            INFO[2] = input('Password: ')
+            IS_LOGGED_IN = dbFunctions.user_auth(INFO)
+        else:
+            INFO[0] = input("Invalid input. Are you an employee or customer?")
+
+
+
+# Main loop for the app to run 
 def main_loop(): 
     # Logic for the app
     menu = Menu(menu_configs.MAIN_MENU_CONFIG)
     store_name = pyfiglet.figlet_format("The Lego Store")
     quit_early = False
+
+    # Prompt the user to login or register 
+    print(store_name)
+    has_account = input('Do you have an account with us? y or n? (You will need one to use our service) ')
+    if has_account == 'y':
+        login_prompt()
+    elif has_account == 'n':
+        dbFunctions.register_user()
+        login_prompt()
 
     # Display help text so user knows how to use the program 
     print_help()
@@ -36,7 +72,7 @@ def main_loop():
     # Start the main menu loop
     while not quit_early: 
         print(store_name)
-        result = menu.run(message={"store": "You are now in store mode.", "online": "You are now in online mode."})
+        result = menu.run(message={"store": "You are in store mode.", "online": "You are in online mode."})
         #print(result)
         if result[1] == "help":
             print_help()

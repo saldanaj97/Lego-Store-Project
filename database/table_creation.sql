@@ -26,6 +26,7 @@ CREATE TABLE customer (
     PhoneNumber varchar(255) NOT NULL, 
     Email varchar (255) NOT NULL, 
     HomeAddress varchar(255) NOT NULL,
+    UserPassword varchar(255)
     PRIMARY KEY(CustomerID)
 )
 
@@ -51,6 +52,7 @@ CREATE TABLE employees (
     FirstName varchar(255),
     LastName varchar(255),
     Email varchar(255),
+    EmpPassword varchar(255),
     PRIMARY KEY(EmployeeID)
 )
 

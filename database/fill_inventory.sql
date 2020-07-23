@@ -193,15 +193,14 @@ VALUES ('100005', '', '', '', 'Set', 'New York Set', '10293', '500.00', '5')
 INSERT INTO items (ItemID ,BrickSize, BrickColor, BrickType, ItemType, SetName, SetPieceCount, ItemPrice, Quantity)
 VALUES ('100007', '', '', '', '', 'Set', 'Toronto Set', '10982', '2', '500.00', '5')
 
--- FILL THE SETS WITH THEIR INDIVIDUAL PIECES
--- SET 1
-INSERT INTO brick_set_pieces (SetID, BrickID, BrickCount, BrickSize)
-VALUES ('100001', '00041', '10', '2x8 Plate')
 
-INSERT INTO brick_set_pieces (SetID, BrickID, BrickCount, BrickSize)
-VALUES ('100001', '00037', '3200', '2x4 Brick')
+-- ADD AN ADMIN EMPLOYEE USER FOR TESTING/ADDING EMPLOYEES TO THE TABLE
+INSERT INTO employees (EmployeeID, FirstName, LastName, Email, EmpPassword)
+VALUES ('00001', 'ADMIN', 'USER', 'ADMINUSER', '1234')
 
-INSERT INTO brick_set_pieces (SetID, BrickID, BrickCount, BrickSize)
-VALUES ('100001', '00030', '2663', '2x3 Brick')
+-- ADD A TEST USER 
+INSERT INTO customer (CustomerID, FirstName, LastName, PhoneNumber, Email, HomeAddress, UserPassword)
+VALUES ('10000', 'Test', 'Customer', '1112223333', 'TestCustomer', 'TestCustomerAddr', '1234')
+
 
 

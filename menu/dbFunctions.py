@@ -1,4 +1,5 @@
 import pyodbc
+import random
 from tabulate import tabulate
 
 # Values needed to connect to the backend database
@@ -19,6 +20,52 @@ headers = ['Item ID', 'Brick Size', 'Brick Color', 'Brick Type', 'Item Type', 'S
 
 # Global variable that will be used to keep track of the users cart while making a purchase
 unformatted_cart = []
+
+# Function to authenticate both users and employees with the database
+def user_auth(info):
+    logged_in = False
+
+    # Query the correct table based on the type of user 
+    if info[0] == 'employee':
+        cursor.execute('SELECT * FROM legoStore.dbo.employees WHERE EmployeeID = ' + '\'' + info[1] + '\'' + 'AND EmpPassword = ' + '\'' + info[2] + '\'')
+        query_result = cursor.fetchall()
+        user = [list(i) for i in query_result]
+        if not user:
+            print('\nAccount with those credentials not found. Please try again. \n')
+            return False
+    elif info[0] == 'customer':
+        cursor.execute('SELECT * FROM legoStore.dbo.customer WHERE Email = ' + '\'' + info[1] + '\'' + 'AND UserPassword = ' + '\'' + info[2] + '\'')
+        query_result = cursor.fetchall()
+        user = [list(i) for i in query_result]
+        if not user:
+            print('\nAccount with those credentials not found. Please try again. \n')
+            return False
+
+    # If we haven't returned back to home, the user has successfully logged in 
+    print("Successfully logged in. ")
+    logged_in = True
+    return logged_in
+
+# Function that allows users to register for an account 
+def register_user():
+    print('\n****** Account Registration ****** \n')
+    f_name = input('First Name: ')
+    l_name = input('Last Name: ')
+    phone_num = input('Phone Number: ')
+    email_addr = input('Email Address: ')
+    home_addr = input('Home Address: ')
+    password = input('Password: ')
+
+    # Query to add a new user to the customers table
+    customer_counter  = random.randrange(2, 100000, 2) # Increment the customer ID counter
+    cursor.execute(
+        'INSERT INTO customer (CustomerID, FirstName, LastName, PhoneNumber, Email, HomeAddress, UserPassword) '
+        'VALUES (\'' + str(customer_counter) + '\',\'' + str(f_name) + '\',\'' + str(l_name) + '\',\'' + str(phone_num )+ '\',\'' + str(email_addr) + '\',\'' + str(home_addr) + '\',\'' + str(password) + '\')'
+    )
+
+    # made sure command gets executed
+    cnx.commit()
+    print('\nAccount Created. \n')
 
 # Function that queries the DB to show store inventory 
 def show_inventory():
@@ -88,12 +135,6 @@ def in_stock_check(ID, quantity_requested):
 
     return quantity_requested
 
-# Function that builds the update query when a user buys an individual brick
-#def subtract_from_brick_inventory(ID, quantity_requested):
-    
-
-#def subtract_from_set_inventory(ID, quantity):
-
 # Function that will be used to add items from list to cart individually
 def list_to_cart(old_list, new_cart):
     for sublist in old_list:
@@ -107,7 +148,7 @@ def update_cart(cart):
     cart_ = []
 
     # Display all the blocks in the cart 
-    print('\n\nThese are all the items currently in your cart')
+    print('\n\nThese are all the items currently in your cart:\n')
     query = ('SELECT * FROM legostore.dbo.items WHERE ItemID = ' + '\'' + cart[0] + '\'')
     cursor.execute(query)
     result = cursor.fetchall()
@@ -163,18 +204,22 @@ def purchase():
     buyMore = True
     while buyMore: 
         show_inventory()
-        print('Above is our current store inventory')
+        print('\n\nAbove is our current store inventory')
         cart_items.append(input('Please enter the Item ID of the item you\'d like to purchase: '))
         cart_items.append(input('And the quantity you want to purchase: '))
         cart_items[1] = in_stock_check(cart_items[0],cart_items[1]) # Check if in stock, if not update quantity
         keep_buying = input('Would you like to add more to your cart? y or n:  ')
         unformatted_cart.append(update_cart(cart_items))
         if keep_buying == 'n':
-            buyMore = False   
+            buyMore = False
         cart_items.clear()
 
     # Format the queries into readable data for the user and print
     formatted_cart = list_to_cart(unformatted_cart, formatted_cart)
-    print(tabulate(formatted_cart, headers, floatfmt=".2f")) 
+    print(tabulate(formatted_cart, headers, floatfmt=".2f") + '\n\n') 
+
+    checkout = input('Would you like to checkout? y or n:')
+    if checkout == 'y':
+        print('Okay checking out')
 
     
