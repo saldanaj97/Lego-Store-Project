@@ -17,6 +17,9 @@ cursor = cnx.cursor()
 # Headers used for formatting the results from the queries
 headers = ['Item ID', 'Brick Size', 'Brick Color', 'Brick Type', 'Item Type', 'Set Name', 'Piece Count', 'Price $', 'Quantity']
 
+# Global variable that will be used to keep track of the users cart while making a purchase
+unformatted_cart = []
+
 # Function that queries the DB to show store inventory 
 def show_inventory():
     # Query the database
@@ -71,6 +74,7 @@ def in_stock_check(ID, quantity_requested):
     query_result = [list(i) for i in result]
     quantity_available = query_result[0][0]
 
+
     # Check if the quantity that has been requested is available
     while int(quantity_requested) > quantity_available:
         print("Sorry we only have " + str(quantity_available) + " in stock currently. ")
@@ -91,31 +95,35 @@ def in_stock_check(ID, quantity_requested):
 
 #def subtract_from_set_inventory(ID, quantity):
 
+# Function that will be used to add items from list to cart individually
+def list_to_cart(old_list, new_cart):
+    for sublist in old_list:
+        for item in sublist:
+            new_cart.append(item)
+    return new_cart
+
 # Function to add all blocks and sets to one cart for easy display 
-'''def compile_cart(cart):
+def update_cart(cart):
     query_result = []
+    cart_ = []
 
     # Display all the blocks in the cart 
-    print('These are all the blocks currently in your cart')
-    for i in range(len(blocks_cart)):
-        if cart[i][0]:
-            query = ('SELECT BrickID, BrickSize, BrickColor, BrickPrice, BrickType FROM legostore.dbo.individual_lego_bricks WHERE BrickID = ' + '\'' +cart[i][0] + '\'')
-            cursor.execute(query)
-            result = cursor.fetchall()
-            query_result += [list(i) for i in result]
+    print('\n\nThese are all the items currently in your cart')
+    query = ('SELECT * FROM legostore.dbo.items WHERE ItemID = ' + '\'' + cart[0] + '\'')
+    cursor.execute(query)
+    result = cursor.fetchall()
+    query_result.append(list(i) for i in result)
 
-    cart_block_headers = ['Item ID', 'Size', 'Color', 'Price', 'Type']
-    print(tabulate(query_result, cart_block_headers, floatfmt='.2f'))
+    # Split the items in the list and add individually to cart_
+    cart_ = list_to_cart(query_result, cart_)
 
-    # Display all the sets in the cart
-    print('These are all the sets currently in your cart')
-    for i in range(len(sets_cart)):
-        select_query_builder('SetName', str(sets_cart[i][0]))'''
+    # Edit the quantity to display the user requested quantity
+    cart_[0][8] = cart[1]
 
+    return cart_
 
 # Function to browse the current inventory
 def browse():
-    # Print the data for individual blocks and sets
     show_inventory()
 
 # Function to search the inventory 
@@ -146,32 +154,30 @@ def search():
     else:
         print(tabulate(search_results, headers, floatfmt=".2f"))
 
+
 # Function that will be used when a user chooses to make a purchase
 def purchase():
     # Make a 2D list in the form [[itemID, Quantity], [itemID, Quantity]]
-    cart = [([0] * 2 ) for row in range(50)]
+    cart_items = []
+    formatted_cart = []
 
     # Loop getting input from the user on what they are looking to buy 
     buyMore = True
-    i = 0
-    j = 0
-
     while buyMore: 
-        # Display the current inventory and ask the user to enter item id and quantity of what they would like to buy 
-        show_all_blocks()
-        print('Above is our current inventory of individual bricks')
-        cart[i][0] = input('Please enter the Item ID of the item you\'d like to purchase: ')
-        cart[i][1] = input('And the quantity you want to purchase: ')
-        cart[i][1] = in_stock_check(blocks_cart[i][0],cart[i][1]) # Check if in stock, if not update quantity
-        i += 1
-
-        # Ask the user if he wants to keep buying items
+        show_inventory()
+        print('Above is our current store inventory')
+        cart_items.append(input('Please enter the Item ID of the item you\'d like to purchase: '))
+        cart_items.append(input('And the quantity you want to purchase: '))
+        cart_items[1] = in_stock_check(cart_items[0],cart_items[1]) # Check if in stock, if not update quantity
         keep_buying = input('Would you like to add more to your cart? y or n:  ')
+        unformatted_cart.append(update_cart(cart_items))
         if keep_buying == 'n':
-            buyMore = False
+            buyMore = False   
+        cart_items.clear()
 
+    formatted_cart = list_to_cart(unformatted_cart, formatted_cart)
 
+    print(tabulate(formatted_cart, headers, floatfmt=".2f")) 
     # Add all blocks and sets to one cart
-    # compile_cart(blocks_cart, sets_cart)
 
     
