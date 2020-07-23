@@ -74,7 +74,6 @@ def in_stock_check(ID, quantity_requested):
     query_result = [list(i) for i in result]
     quantity_available = query_result[0][0]
 
-
     # Check if the quantity that has been requested is available
     while int(quantity_requested) > quantity_available:
         print("Sorry we only have " + str(quantity_available) + " in stock currently. ")
@@ -157,7 +156,6 @@ def search():
 
 # Function that will be used when a user chooses to make a purchase
 def purchase():
-    # Make a 2D list in the form [[itemID, Quantity], [itemID, Quantity]]
     cart_items = []
     formatted_cart = []
 
@@ -175,9 +173,8 @@ def purchase():
             buyMore = False   
         cart_items.clear()
 
+    # Format the queries into readable data for the user and print
     formatted_cart = list_to_cart(unformatted_cart, formatted_cart)
-
     print(tabulate(formatted_cart, headers, floatfmt=".2f")) 
-    # Add all blocks and sets to one cart
 
     
