@@ -1,10 +1,3 @@
-CREATE TABLE brick_set_pieces (
-    SetID int NOT NULL,
-    BrickID int NOT NULL, 
-    BrickCount int NOT NULL,
-    BrickSize varchar(255) NOT NULL
-);
-
 CREATE TABLE items (
     ItemID int NOT NULL,
     BrickSize varchar(4),
