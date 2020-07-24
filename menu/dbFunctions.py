@@ -167,10 +167,21 @@ def update_cart(cart):
 
     return cart_
 
+# Function to make sure the user entered a valid card number
+def card_num_check(card_num):
+    valid_num = False
+    while not valid_num:
+        if len(card_num) < 16:
+            card_num = input('Please enter a valid 16 digit card number with no spaces in between: ')
+        else:
+            valid_num = True
+    return card_num
+
 # Function to add get user input when adding a new card 
 def add_new_card():
     name = input('Cardholder Name: ')
     card_num = input('Card Number: ')
+    card_num = card_num_check(card_num)
     exp_date = input('Expiration Date: ')
     cvc = input('CVC: ')
     save_card = input('Do you want to save this card for faster checkout next time? y or n? ')
