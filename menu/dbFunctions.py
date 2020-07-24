@@ -147,6 +147,14 @@ def list_to_cart(old_list, new_cart):
             new_cart.append(item)
     return new_cart
 
+
+# Function that will parse the query results into a list of attributes for each item
+def result_parser(query_result, item_list):
+    for sublist in query_result:
+        item_list.append(sublist)
+    return item_list
+
+
 # Function to add all blocks and sets to one cart for easy display 
 def update_cart(cart):
     query_result = []
@@ -253,6 +261,26 @@ def checkout_(formatted_cart, total):
         print('Paid')
         return True
         
+# Function to display what each item in the order is 
+def detailed_history(history_):
+    # List to hold the item id's
+    items = []
+    item_details = []
+    details_headers = ['Item ID', 'Brick Size', 'Brick Color', 'Brick Type', 'Item Type', 'Set Name', 'Set Piece Count']
+
+    # Get all of the item id's from the order
+    for i in range(len(history_)):
+        items.append(history_[i][1])
+
+    for i in range(len(items)):
+        query = ('SELECT ItemID, BrickSize, BrickColor, BrickType, ItemType, SetName, SetPieceCount FROM items WHERE ItemID = ' + '\'' + str(items[i]) + '\'')
+        cursor.execute(query)
+        result = cursor.fetchall()
+        query_result = [list(i) for i in result]
+        item_details = result_parser(query_result, item_details) # Use this function to split up the query results 
+
+    print(tabulate(item_details, details_headers))
+
 
 # Function to browse the current inventory
 def browse():
@@ -317,7 +345,7 @@ def purchase():
     print('Cart total = $' + str(total))
 
     # Ask the user if he is ready to checkout yet
-    checkout = input('Would you like to checkout? y or n:')
+    checkout = input('Would you like to checkout? y or n: ')
     if checkout == 'y':
         paid = checkout_(formatted_cart, total)
     else:
@@ -360,8 +388,9 @@ def order_history():
         if not history_:
             print("There were no orders matching that order number. Please try again. ")
         else:
-            print('Purchase history for order number: ', order_num)
-            print(tabulate(history_, order_item_headers, floatfmt='.2f'))
+            print('Purchase history for order number: ', order_num, '\n\n')
+            print(tabulate(history_, order_item_headers, floatfmt='.2f'), '\n')
+            detailed_history(history_)
     else: 
         return 
 
