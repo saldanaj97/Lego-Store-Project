@@ -202,5 +202,6 @@ VALUES ('00001', 'ADMIN', 'USER', 'ADMINUSER', '1234')
 INSERT INTO customer (CustomerID, FirstName, LastName, PhoneNumber, Email, HomeAddress, UserPassword)
 VALUES ('10000', 'Test', 'Customer', '1112223333', 'TestCustomer', 'TestCustomerAddr', '1234')
 
-
-
+-- GIVE THE TEST USER A DEFAULT CARD 
+INSERT INTO card_payment (CustomerID, CardholderName, CardNumber, ExpDate, CVC, LastFour)
+VALUES ('10000', 'TEST CARD', '1111222233334444', '01/21', '333', '4444')
