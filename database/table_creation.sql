@@ -1,4 +1,3 @@
--- Make the table that will hold the piece type and count of each set 
 CREATE TABLE brick_set_pieces (
     SetID int NOT NULL,
     BrickID int NOT NULL, 
