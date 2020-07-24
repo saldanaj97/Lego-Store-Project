@@ -90,6 +90,8 @@ def main_loop():
             dbFunctions.search()
         elif result[0] == "online" and result[1] == "purchaseItems":
             dbFunctions.purchase()
+        elif result[0] == "online" and result[1] == "purchaseHistory":
+            dbFunctions.order_history()
         elif result[1] == "quit":
             quit_early = True
 

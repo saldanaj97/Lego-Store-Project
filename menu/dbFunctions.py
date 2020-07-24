@@ -328,4 +328,42 @@ def purchase():
         formatted_cart.clear()
         unformatted_cart.clear()
 
+# Function to display the order history of the user
+def order_history():
+    # Headers for displaying the information in table format
+    history_headers = ['Order Number', 'Customer ID', 'Order Date', 'Order Total', 'Last Four Digits of Card Used']
+    order_item_headers = ['Order Number', 'Item ID', 'Quantity', 'Price']
+
+    # Query the DB
+    query = ('SELECT * FROM legostore.dbo.orders WHERE CustomerID = ' + '\'' + str(CURRENT_USER_ID) + '\'')
+    cursor.execute(query)
+    result = cursor.fetchall()
+    history = [list(i) for i in result]
+
+    # Display history if there have been any purchases
+    if not history:
+        print('You have no recent purchases. ')
+    else:
+        print('\n\n******* Purchase History *******')
+        print(tabulate(history, history_headers, floatfmt='.2f'), '\n\n')
+
+    # Ask the user if he wants more information 
+    more_info = input('Do you want more information about an order? y or n: ')
+    more_info.lower()
+    if more_info == 'y':
+        order_num = input('Please enter the order number you want more information about: ')
+        query = ('SELECT * FROM legostore.dbo.order_items WHERE OrderID = ' + '\'' + str(order_num) + '\'')
+        cursor.execute(query)
+        result_ = cursor.fetchall()
+        history_ = [list(i) for i in result_]
+        
+        if not history_:
+            print("There were no orders matching that order number. Please try again. ")
+        else:
+            print('Purchase history for order number: ', order_num)
+            print(tabulate(history_, order_item_headers, floatfmt='.2f'))
+    else: 
+        return 
+
     
+
