@@ -25,13 +25,27 @@ CREATE TABLE customer (
     PhoneNumber varchar(255) NOT NULL, 
     Email varchar (255) NOT NULL, 
     HomeAddress varchar(255) NOT NULL,
-    UserPassword varchar(255)
+    UserPassword varchar(255),
     PRIMARY KEY(CustomerID)
 )
+
+CREATE TABLE card_payment (
+    CustomerID int NOT NULL, 
+    CardholderName varchar(255) NOT NULL,
+    CardNumber varchar(255) NOT NULL,
+    ExpDate varchar(255) NOT NULL, 
+    CVC varchar(255) NOT NULL,
+    LastFour varchar(255),
+    FOREIGN KEY(CustomerID) REFERENCES customer(CustomerID)
+)
+
 
 CREATE TABLE orders (
     OrderID int NOT NULL,
     CustomerID int NOT NULL, 
+    OrderDate varchar(255),
+    OrderTotal varchar(255),
+    CardUsed varchar(255),
     PRIMARY KEY(OrderID),
     FOREIGN KEY(CustomerID) REFERENCES customer(CustomerID) ON DELETE CASCADE ON UPDATE CASCADE
 )
@@ -40,8 +54,7 @@ CREATE TABLE order_items (
     OrderID int NOT NULL,
     ItemID int, 
     Quantity int, 
-    Price int, 
-    PRIMARY KEY(OrderID, ItemId),
+    Price DECIMAL(10,2) NOT NULL, 
     FOREIGN KEY(OrderID) REFERENCES orders (OrderID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(ItemID) REFERENCES items(ItemID) ON DELETE CASCADE ON UPDATE CASCADE
 )
@@ -56,8 +69,8 @@ CREATE TABLE employees (
 )
 
 SELECT * FROM items;
-SELECT * FROM brick_set_pieces;
 SELECT * FROM customer;
 SELECT * FROM orders;
 SELECT * FROM order_items;
+SELECT * FROM card_payment;
 SELECT * FROM employees;
