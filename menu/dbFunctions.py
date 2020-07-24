@@ -1,6 +1,7 @@
 import pyodbc
 import random
 from tabulate import tabulate
+from datetime import date
 
 # Values needed to connect to the backend database
 cnx = pyodbc.connect(
@@ -166,6 +167,72 @@ def update_cart(cart):
 
     return cart_
 
+# Function that checks if a user has a card on file, if not allows them to add one
+def card_on_file(order_number):
+    query = ('SELECT * FROM card_payment WHERE CustomerID = ' + '\'' + str(CURRENT_USER_ID) + '\'')
+    cursor.execute(query)
+    result = cursor.fetchall()
+    query_result = [list(i) for i in result]
+
+    # Check if there are any cards on file 
+    if not query_result:
+        print('You do not have any cards on file, please enter your card info')
+        name = input('Cardholder Name: ')
+        card_num = input('Card Number: ')
+        exp_date = input('Expiration Date: ')
+        cvc = input('CVC: ')
+        save_card = input('Do you want to save this card for faster checkout next time? y or n? ')
+        print('Card has now been saved. ')
+        split_card_num = [(card_num[i:i+4]) for i in range(0, len(card_num), 4)]                    # Split the card number into groups of 4
+        if save_card:
+            query = (
+                'INSERT INTO card_payment(CustomerID, CardholderName, CardNumber, ExpDate, CVC, LastFour) '
+                'VALUES (\''+ str(CURRENT_USER_ID) + '\',\'' + str(name) + '\',\'' + str(card_num) + '\',\'' + str(exp_date) + '\',\'' + str(cvc) +  '\',\'' + str(split_card_num[3]) + '\')'
+            )
+        cursor.execute(query)
+        query = ('UPDATE orders SET CardUsed = ' + '\'' + str(split_card_num[3]) + '\' WHERE OrderID = ' + '\'' + str(order_number) + '\'')
+    else:
+        print('These are the last 4 digits of the cards you have on file: ')
+        for i in range(len(query_result)):
+            print(i, ')', query_result[i][5]) 
+        card_to_use = input('Which card do you want to use?')
+        query = ('UPDATE orders SET CardUsed = ' + '\'' + str(query_result[int(card_to_use)][5]) + '\' WHERE OrderID = ' + '\'' + str(order_number) + '\'')
+
+    # Add the card used to the order 
+    cursor.execute(query)
+
+    print('\n\n****** Your order has been placed. Thank you for your purchase! ******\n\n')
+    return True
+
+# Function to that drives the checkout 
+def checkout_(formatted_cart, total):
+    # Get an random order number
+    order_number  = random.randrange(2, 1000000, 2)
+
+    # Create the order first 
+    query = (
+        'INSERT INTO orders (OrderID, CustomerID, OrderDate, OrderTotal) '
+        'VALUES (\''+ str(order_number) + '\',\'' + str(CURRENT_USER_ID) + '\',\'' + str(date.today()) + '\',\'' + str(total) + '\')'
+    )
+    cursor.execute(query)
+
+    # Add items that are in the cart to the order_items table
+    for i in range(len(formatted_cart)):
+        query = (
+            'INSERT INTO order_items (OrderID, ItemID, Quantity, Price) '
+            'VALUES (\''+ str(order_number) + '\',\'' + str(formatted_cart[i][0]) + '\',\'' + str(formatted_cart[i][8]) + '\',\'' + str(formatted_cart[i][7]) + '\')'
+        )
+        cursor.execute(query)
+    
+    print('\n****** Payment ******\n')
+    paid = card_on_file(order_number)
+
+    # If the order was paid then push changes to the database and empty the cart 
+    if paid:
+        print('Paid')
+        return True
+        
+
 # Function to browse the current inventory
 def browse():
     show_inventory()
@@ -222,8 +289,22 @@ def purchase():
     formatted_cart = list_to_cart(unformatted_cart, formatted_cart)
     print(tabulate(formatted_cart, headers, floatfmt=".2f") + '\n\n') 
 
+    # Calculate the cart total 
+    total = 0.00
+    for i in range(len(formatted_cart)):
+        total += float(formatted_cart[i][7]) * float(formatted_cart[i][8])
+    print('Cart total = $' + str(total))
+
+    # Ask the user if he is ready to checkout yet
     checkout = input('Would you like to checkout? y or n:')
     if checkout == 'y':
-        print('Okay checking out')
+        paid = checkout_(formatted_cart, total)
+    else:
+        paid = False 
+
+    # Clear the cart if the last order was paid for 
+    if paid:
+        formatted_cart.clear()
+        unformatted_cart.clear()
 
     
