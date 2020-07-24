@@ -62,7 +62,7 @@ def register_user():
     password = input('Password: ')
 
     # Query to add a new user to the customers table
-    customer_counter  = random.randrange(2, 100000, 2) # Increment the customer ID counter
+    customer_counter  = random.randrange(2, 100000) # Increment the customer ID counter
     cursor.execute(
         'INSERT INTO customer (CustomerID, FirstName, LastName, PhoneNumber, Email, HomeAddress, UserPassword) '
         'VALUES (\'' + str(customer_counter) + '\',\'' + str(f_name) + '\',\'' + str(l_name) + '\',\'' + str(phone_num )+ '\',\'' + str(email_addr) + '\',\'' + str(home_addr) + '\',\'' + str(password) + '\')'
@@ -207,7 +207,7 @@ def card_on_file(order_number):
 # Function to that drives the checkout 
 def checkout_(formatted_cart, total):
     # Get an random order number
-    order_number  = random.randrange(2, 1000000, 2)
+    order_number  = random.randrange(2, 100000000)
 
     # Create the order first 
     query = (
