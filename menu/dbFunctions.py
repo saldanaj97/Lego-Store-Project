@@ -167,6 +167,23 @@ def update_cart(cart):
 
     return cart_
 
+# Function to add get user input when adding a new card 
+def add_new_card():
+    name = input('Cardholder Name: ')
+    card_num = input('Card Number: ')
+    exp_date = input('Expiration Date: ')
+    cvc = input('CVC: ')
+    save_card = input('Do you want to save this card for faster checkout next time? y or n? ')
+    print('Card has now been saved. ')
+    split_card_num = [(card_num[i:i+4]) for i in range(0, len(card_num), 4)]                    # Split the card number into groups of 4
+    if save_card:
+        query = (
+            'INSERT INTO card_payment(CustomerID, CardholderName, CardNumber, ExpDate, CVC, LastFour) '
+            'VALUES (\''+ str(CURRENT_USER_ID) + '\',\'' + str(name) + '\',\'' + str(card_num) + '\',\'' + str(exp_date) + '\',\'' + str(cvc) +  '\',\'' + str(split_card_num[3]) + '\')'
+        )
+        cursor.execute(query)
+    return split_card_num
+    
 # Function that checks if a user has a card on file, if not allows them to add one
 def card_on_file(order_number):
     query = ('SELECT * FROM card_payment WHERE CustomerID = ' + '\'' + str(CURRENT_USER_ID) + '\'')
@@ -176,27 +193,20 @@ def card_on_file(order_number):
 
     # Check if there are any cards on file 
     if not query_result:
-        print('You do not have any cards on file, please enter your card info')
-        name = input('Cardholder Name: ')
-        card_num = input('Card Number: ')
-        exp_date = input('Expiration Date: ')
-        cvc = input('CVC: ')
-        save_card = input('Do you want to save this card for faster checkout next time? y or n? ')
-        print('Card has now been saved. ')
-        split_card_num = [(card_num[i:i+4]) for i in range(0, len(card_num), 4)]                    # Split the card number into groups of 4
-        if save_card:
-            query = (
-                'INSERT INTO card_payment(CustomerID, CardholderName, CardNumber, ExpDate, CVC, LastFour) '
-                'VALUES (\''+ str(CURRENT_USER_ID) + '\',\'' + str(name) + '\',\'' + str(card_num) + '\',\'' + str(exp_date) + '\',\'' + str(cvc) +  '\',\'' + str(split_card_num[3]) + '\')'
-            )
-        cursor.execute(query)
+        print('You do not have any cards on file, please enter your card info: ')
+        split_card_num = add_new_card()
         query = ('UPDATE orders SET CardUsed = ' + '\'' + str(split_card_num[3]) + '\' WHERE OrderID = ' + '\'' + str(order_number) + '\'')
     else:
         print('These are the last 4 digits of the cards you have on file: ')
         for i in range(len(query_result)):
-            print(i, ')', query_result[i][5]) 
-        card_to_use = input('Which card do you want to use?')
-        query = ('UPDATE orders SET CardUsed = ' + '\'' + str(query_result[int(card_to_use)][5]) + '\' WHERE OrderID = ' + '\'' + str(order_number) + '\'')
+            print(i+1, ')', query_result[i][5])                                                     # i + 1 so 0) will not be displyed to the user
+        card_to_use = input('Would you like to use one of these cards? If so, just type the option number of the card ie. 1. If you would like to add a new card type \'new\'. ')
+        if card_to_use == 'new' or card_to_use == 'New':
+            split_card_num = add_new_card()
+            query = ('UPDATE orders SET CardUsed = ' + '\'' + str(split_card_num[3]) + '\' WHERE OrderID = ' + '\'' + str(order_number) + '\'')
+        else:
+            card_to_use = int(card_to_use) - 1
+            query = ('UPDATE orders SET CardUsed = ' + '\'' + str(query_result[int(card_to_use)][5]) + '\' WHERE OrderID = ' + '\'' + str(order_number) + '\'')
 
     # Add the card used to the order 
     cursor.execute(query)
