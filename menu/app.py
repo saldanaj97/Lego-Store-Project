@@ -25,7 +25,7 @@ def print_help():
     print(help_text)
 
 
-# Info will hold the userType, id and the password in repsective indicies ie. [UserType, ID, Passwd]
+# Info will hold the userType, id and the password in respective indicies ie. [UserType, ID, Passwd]
 INFO = [0,0,0]
 
 # Function that prompts the user to login and runs the user authentication when login info has been entered
@@ -47,7 +47,6 @@ def login_prompt():
             IS_LOGGED_IN = dbFunctions.user_auth(INFO)
         else:
             INFO[0] = input("Invalid input. Are you an employee or customer?")
-
 
 
 # Main loop for the app to run 
@@ -77,21 +76,29 @@ def main_loop():
         if result[1] == "help":
             print_help()
         elif result[0] == "store" and result[1] == "sell" and INFO[0] == 'employee':
-            print('Sell')
+            dbFunctions.sell()
         elif result[0] == "store" and result[1] == "DBMgmt" and INFO[0] == 'employee':
             print('DB Management')
         elif result[0] == "store" and result[1] == "sell" and INFO[0] != 'employee':
             print('YOU MUST BE LOGGED IN AS AN EMPLOYEE TO ACCESS THIS FEATURE')
         elif result[0] == "store" and result[1] == "DBMgmt" and INFO[0] != 'employee':
             print('YOU MUST BE LOGGED IN AS AN EMPLOYEE TO ACCESS THIS FEATURE')
-        elif result[0] == "online" and result[1] == "browse":
+        elif result[0] == "online" and result[1] == "browse" and INFO[0] == 'customer':
             dbFunctions.browse()
-        elif result[0] == "online" and result[1] == "search":
+        elif result[0] == "online" and result[1] == "search" and INFO[0] == 'customer':
             dbFunctions.search()
-        elif result[0] == "online" and result[1] == "purchaseItems":
+        elif result[0] == "online" and result[1] == "purchaseItems" and INFO[0] == 'customer':
             dbFunctions.purchase()
-        elif result[0] == "online" and result[1] == "purchaseHistory":
+        elif result[0] == "online" and result[1] == "purchaseHistory"and INFO[0] == 'customer':
             dbFunctions.order_history()
+        elif result[0] == "online" and result[1] == "browse" and INFO[0] != 'customer':
+            print('YOU MUST BE LOGGED IN AS A CUSTOMER TO ACCESS THIS FEATURE')
+        elif result[0] == "online" and result[1] == "search" and INFO[0] != 'customer':
+            print('YOU MUST BE LOGGED IN AS A CUSTOMER TO ACCESS THIS FEATURE')
+        elif result[0] == "online" and result[1] == "purchaseItems" and INFO[0] != 'customer':
+            print('YOU MUST BE LOGGED IN AS A CUSTOMER TO ACCESS THIS FEATURE')
+        elif result[0] == "online" and result[1] == "purchaseHistory" and INFO[0] != 'customer':
+            print('YOU MUST BE LOGGED IN AS A CUSTOMER TO ACCESS THIS FEATURE')
         elif result[1] == "quit":
             quit_early = True
 
