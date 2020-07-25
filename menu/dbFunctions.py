@@ -30,6 +30,16 @@ def run_query(query):
 
     return query_results_list
 
+# Function that builds the select query that displays all columns in a table
+def select_query_builder(query_from, description):
+    query = ('SELECT * FROM legostore.dbo.items WHERE ' + query_from + " = " + '\'' + description + '\'')
+    return query
+
+# Function that builds the update query 
+def update_query_builder(ID, new_quantity, operation):
+    query = ('UPDATE legostore.dbo.items SET Quantity = Quantity ' + operation + ' ' + str(new_quantity) + ' WHERE ItemID = ' + '\'' + str(ID) + '\'')
+    return query
+
 # Function to authenticate both users and employees with the database
 def user_auth(info):
     # Set the logged in bool to false since user is not yet logged in and make the currrent user's id a global var so we can access it in other functions
@@ -120,11 +130,6 @@ def get_details(characteristic):
     else:
         print("\n\n*** This does not match any characteristics. Please try searching again. ***\n")
     return details
-
-# Function that builds the select query that displays all columns in a table
-def select_query_builder(query_from, description):
-    query = ('SELECT * FROM legostore.dbo.items WHERE ' + query_from + " = " + '\'' + description + '\'')
-    return query
 
 # Function to check if the requested item is in stock, if item is not in stock, return new quantity request
 def in_stock_check(ID, quantity_requested):
@@ -325,6 +330,43 @@ def get_customer_ID(phone_num):
     else:
         return CURRENT_USER_ID
 
+# Function that will build and run the query for adding a new item 
+def new_item(item_to_update, brick_size, brick_color, brick_type, item_type, set_name, piece_count, item_price, new_quantity):
+    query = (
+        'INSERT INTO items (ItemID ,BrickSize, BrickColor, BrickType, ItemType, SetName, SetPieceCount, ItemPrice, Quantity)'
+        'VALUES (\'' + str(item_to_update) + '\', \'' + str(brick_size) + '\', \'' + str(brick_color) + '\', \'' + str(brick_type) + '\', \'' + str(item_type) + '\', \'' + str(set_name) + '\', \'' + str(piece_count) + '\', \'' + str(item_price) + '\', \'' + str(new_quantity) + '\')'
+        )
+    cursor.execute(query)
+
+    print('\n\nThe following item has now been added to the inventory\n')
+    show_inventory()
+
+# Function used to update the store inventory based on manual employee input
+def update_quantity(item_to_update, new_quantity):
+    item_info = []
+    query = select_query_builder('ItemID', item_to_update)
+    item_info = run_query(query)
+
+    # Check if the item exists, if not allow employee to input new data for a new item entry
+    if not item_info:
+        add_to_inventory = input('Item does not exist in our inventory, do you want to add it? y or n?: ')
+        add_to_inventory.lower()
+        if add_to_inventory == 'y':
+            brick_size = input('Brick Size: ')
+            brick_color = input('Brick Color: ')
+            brick_type = input('Brick Type: ')
+            item_type = input('Item Type: ')
+            set_name = input('Set Name(N/A if not set): ')
+            piece_count = input('Set Piece Count(N/A if not set): ')
+            item_price = input('Price(without $ sign): ')
+            new_item(item_to_update, brick_size, brick_color, brick_type, item_type, set_name, piece_count, item_price, new_quantity)
+        else: 
+            return
+    else:
+        query = update_query_builder(item_to_update, new_quantity, '+')
+        cursor.execute(query)
+
+
 # Function to browse the current inventory
 def browse():
     show_inventory()
@@ -513,3 +555,30 @@ def sell():
     if paid:
         formatted_cart.clear()
         unformatted_cart.clear()
+
+# Function that allows the employee to choose what they want to do to the DB
+def dbMangement():
+    # Prompt user asking what they want to do
+    db_operation = input(
+        '\n\nWhat would you like to do? You can choose from the following: \n'
+        '1) Update Inventory    2) Add Employee Info(Managers ONLY)     3) Delete Employee Info(Managers ONLY)\n'
+    )
+
+    # Run the appropriate function based on the response from the user
+    if db_operation == '1':
+        item_to_update = input('Enter the Item ID of the item you want to update: ')
+        new_quantity = input('Enter the quantity you are adding to the inventory: ')
+        update_quantity(item_to_update, new_quantity)
+    elif db_operation == '2':
+        print('Fill in the details of the employee you want to add')
+        f_name = input('First name: ')
+        l_name = input('Last name: ')
+        email = input('Email: ')
+        print('An email will be sent to the employee containing their employee ID along with a link to make a password. ')
+
+    elif db_operation == '3':
+        employee_id = input('Please enter the ID of the employee you are deleting from the system: ')
+
+    else: 
+        print('Invalid Input')
+        
