@@ -160,13 +160,11 @@ def list_to_cart(old_list, new_cart):
             new_cart.append(item)
     return new_cart
 
-
 # Function that will parse the query results into a list of attributes for each item
 def result_parser(query_result, item_list):
     for sublist in query_result:
         item_list.append(sublist)
     return item_list
-
 
 # Function to add all blocks and sets to one cart for easy display 
 def update_cart(cart):
@@ -337,9 +335,8 @@ def new_item(item_to_update, brick_size, brick_color, brick_type, item_type, set
         'VALUES (\'' + str(item_to_update) + '\', \'' + str(brick_size) + '\', \'' + str(brick_color) + '\', \'' + str(brick_type) + '\', \'' + str(item_type) + '\', \'' + str(set_name) + '\', \'' + str(piece_count) + '\', \'' + str(item_price) + '\', \'' + str(new_quantity) + '\')'
         )
     cursor.execute(query)
-
-    print('\n\nThe following item has now been added to the inventory\n')
     show_inventory()
+    print('\nThe item has now been added to the inventory. \n')
 
 # Function used to update the store inventory based on manual employee input
 def update_quantity(item_to_update, new_quantity):
@@ -365,7 +362,18 @@ def update_quantity(item_to_update, new_quantity):
     else:
         query = update_query_builder(item_to_update, new_quantity, '+')
         cursor.execute(query)
+        cnx.commit()
 
+# Function that will allow managers to add a new employee to the databse
+def new_employee(first, last, email):
+    # Create a new employee ID 
+    emp_id  = random.randrange(2, 100000000)
+    query = (
+        'INSERT INTO employees (EmployeeID, FirstName, LastName, Email, EmpPassword) '
+        'VALUES (\'' + str(emp_id) + '\', \'' + str(first) + '\', \'' + str(last) + '\', \'' + str(email) + '\', \'' + 'NONE\')'
+    )
+    cursor.execute(query)
+    cnx.commit()
 
 # Function to browse the current inventory
 def browse():
@@ -396,7 +404,6 @@ def search():
         print('There are no products in our inventory matching that search.')
     else:
         print(tabulate(search_results, headers, floatfmt=".2f"))
-
 
 # Function that will be used when a user chooses to make a purchase
 def purchase():
@@ -574,8 +581,8 @@ def dbMangement():
         f_name = input('First name: ')
         l_name = input('Last name: ')
         email = input('Email: ')
-        print('An email will be sent to the employee containing their employee ID along with a link to make a password. ')
-
+        print('\n\nAn email will be sent to the employee containing their employee ID along with a link to make a password.\n\n')
+        new_employee(f_name, l_name, email)
     elif db_operation == '3':
         employee_id = input('Please enter the ID of the employee you are deleting from the system: ')
 
