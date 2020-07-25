@@ -89,8 +89,6 @@ def main_loop():
             dbFunctions.search()
         elif result[0] == "online" and result[1] == "purchaseItems" and INFO[0] == 'customer':
             dbFunctions.purchase()
-        elif result[0] == "online" and result[1] == "cart" and INFO[0] == 'customer':
-            dbFunctions.view_cart()
         elif result[0] == "online" and result[1] == "purchaseHistory"and INFO[0] == 'customer':
             dbFunctions.order_history()
         elif result[0] == "online" and result[1] == "browse" and INFO[0] != 'customer':
@@ -98,8 +96,6 @@ def main_loop():
         elif result[0] == "online" and result[1] == "search" and INFO[0] != 'customer':
             print('YOU MUST BE LOGGED IN AS A CUSTOMER TO ACCESS THIS FEATURE')
         elif result[0] == "online" and result[1] == "purchaseItems" and INFO[0] != 'customer':
-            print('YOU MUST BE LOGGED IN AS A CUSTOMER TO ACCESS THIS FEATURE')
-        elif result[0] == "online" and result[1] == "cart" and INFO[0] != 'customer':
             print('YOU MUST BE LOGGED IN AS A CUSTOMER TO ACCESS THIS FEATURE')
         elif result[0] == "online" and result[1] == "purchaseHistory" and INFO[0] != 'customer':
             print('YOU MUST BE LOGGED IN AS A CUSTOMER TO ACCESS THIS FEATURE')
