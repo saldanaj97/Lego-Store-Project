@@ -236,8 +236,14 @@ def card_on_file(order_number, CURRENT_USER_ID):
     # Add the card used to the order 
     cursor.execute(query)
 
-    print('\n\n****** Your order has been placed. Thank you for your purchase! ******\n\n')
-    return True
+    confirm_order = input("\n\nPlace order? (If you say no, you will be taken back to the online menu) y or n?: ")
+    confirm_order.lower()
+    if confirm_order:
+        return True
+    elif confirm_order == 'n':
+        return False
+    else:
+        print('Invalid input')
 
 # Function to that drives the checkout 
 def checkout_(formatted_cart, total, CURRENT_USER_ID, payment_method):
@@ -269,7 +275,7 @@ def checkout_(formatted_cart, total, CURRENT_USER_ID, payment_method):
 
     # If the order was paid then push changes to the database and empty the cart 
     if paid:
-        print('Paid')
+        print('\n\n****** Your order has been placed. Thank you for your purchase! ******\n\n')
         return True
         
 # Function to display what each item in the order is 
@@ -352,6 +358,7 @@ def search():
 
 # Function that will be used when a user chooses to make a purchase
 def purchase():
+    confirmation_headers = ['ItemID', 'BrickSize', 'BrickColor', 'BrickType', 'ItemType', 'SetName', 'SetPieceCount', 'ItemPrice']
     cart_items = []
     formatted_cart = []
     item_details = []
@@ -378,10 +385,10 @@ def purchase():
         print('Cart total = ${:.2f}'.format(total))
 
         # Make the user confirm this is the correct item
-        print('Are you sure you want to add this to the cart?')
-        query = ('SELECT ItemID, BrickSize, BrickColor, BrickType, SetName, SetPieceCount, ItemPrice FROM legostore.dbo.items WHERE ItemID = \'' + cart_items[0] + '\'')
+        print('\nAre you sure you want to add this to the cart?')
+        query = ('SELECT ItemID, BrickSize, BrickColor, BrickType, ItemType, SetName, SetPieceCount, ItemPrice FROM legostore.dbo.items WHERE ItemID = \'' + cart_items[0] + '\'')
         item_details = run_query(query)
-        print(tabulate(item_details, headers, floatfmt='.2f'), '\nQuantity: ', cart_items[1])
+        print(tabulate(item_details, confirmation_headers, floatfmt='.2f'), '\nQuantity: ', cart_items[1])
         add_to_cart = input('y or n?: ')
         add_to_cart.lower()
         if add_to_cart == 'n':
@@ -395,16 +402,10 @@ def purchase():
         cart_items.clear()
         formatted_cart.clear()
 
-
     # Format the queries into readable data for the user and print
+    print('\n\nYour cart')
     formatted_cart = list_to_cart(unformatted_cart, formatted_cart)
     print(tabulate(formatted_cart, headers, floatfmt=".2f") + '\n\n') 
-
-    # Calculate the cart total 
-    total = 0.00
-    for i in range(len(formatted_cart)):
-        total += float(formatted_cart[i][7]) * float(formatted_cart[i][8])
-    print('Cart total = ${:.2f}'.format(total))
 
     # Ask the user if he is ready to checkout yet
     checkout = input('Would you like to checkout? y or n: ')
@@ -485,7 +486,7 @@ def sell():
         cart_items.clear()
         formatted_cart.clear()
 
-    # Ask the user if he is ready to checkout yet
+    # Checkout
     print('\n****** Checkout *******\n')
     has_account = input('Does the customer have an account on file? y or n: ')
     if has_account == 'y':
