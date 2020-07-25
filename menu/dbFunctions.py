@@ -22,6 +22,14 @@ headers = ['Item ID', 'Brick Size', 'Brick Color', 'Brick Type', 'Item Type', 'S
 # Global variable that will be used to keep track of the users cart while making a purchase
 unformatted_cart = []
 
+# Function that will run execute the query on the DB and return the results 
+def run_query(query):
+    cursor.execute(query)
+    results = cursor.fetchall()
+    query_results_list = [list(i) for i in results]
+
+    return query_results_list
+
 # Function to authenticate both users and employees with the database
 def user_auth(info):
     # Set the logged in bool to false since user is not yet logged in and make the currrent user's id a global var so we can access it in other functions
@@ -30,14 +38,14 @@ def user_auth(info):
 
     # Query the correct table based on the type of user 
     if info[0] == 'employee':
-        cursor.execute('SELECT EmployeeID FROM legoStore.dbo.employees WHERE EmployeeID = ' + '\'' + info[1] + '\'' + 'AND EmpPassword = ' + '\'' + info[2] + '\'')
+        cursor.execute('SELECT EmployeeID FROM legoStore.dbo.employees WHERE EmployeeID = ' + '\'' + str(info[1]) + '\'' + 'AND EmpPassword = ' + '\'' + str(info[2]) + '\'')
         query_result = cursor.fetchall()
         user = [list(i) for i in query_result]
         if not user:
             print('\nAccount with those credentials not found. Please try again. \n')
             return False
     elif info[0] == 'customer':
-        cursor.execute('SELECT CustomerID FROM legoStore.dbo.customer WHERE Email = ' + '\'' + info[1] + '\'' + 'AND UserPassword = ' + '\'' + info[2] + '\'')
+        cursor.execute('SELECT CustomerID FROM legoStore.dbo.customer WHERE Email = ' + '\'' + str(info[1]) + '\'' + 'AND UserPassword = ' + '\'' + str(info[2]) + '\'')
         query_result = cursor.fetchall()
         user = [list(i) for i in query_result]
         if not user:
@@ -56,19 +64,19 @@ def register_user():
     print('\n****** Account Registration ****** \n')
     f_name = input('First Name: ')
     l_name = input('Last Name: ')
-    phone_num = input('Phone Number: ')
+    phone_num = input('Phone Number(no spaces): ')
     email_addr = input('Email Address: ')
     home_addr = input('Home Address: ')
     password = input('Password: ')
 
     # Query to add a new user to the customers table
-    customer_counter  = random.randrange(2, 100000) # Increment the customer ID counter
+    customer_counter  = random.randrange(2, 100000) # Give the customer a random ID number in the system
     cursor.execute(
         'INSERT INTO customer (CustomerID, FirstName, LastName, PhoneNumber, Email, HomeAddress, UserPassword) '
         'VALUES (\'' + str(customer_counter) + '\',\'' + str(f_name) + '\',\'' + str(l_name) + '\',\'' + str(phone_num )+ '\',\'' + str(email_addr) + '\',\'' + str(home_addr) + '\',\'' + str(password) + '\')'
     )
 
-    # made sure command gets executed
+    # Made sure command gets executed so account gets created in the DB
     cnx.commit()
     print('\nAccount Created. \n')
 
@@ -82,7 +90,7 @@ def show_inventory():
     block_inventory = [list(i) for i in query_result]
 
     # Print the data for individual blocks
-    print("\n\nStore Inventoryt")
+    print("\n\nStore Inventory")
     print(tabulate(block_inventory, headers, floatfmt=".2f"))
 
 # Function that has conditionals to identify which characteristic the user is searching for and allows them to provide details
@@ -186,7 +194,7 @@ def card_num_check(card_num):
     return card_num
 
 # Function to add get user input when adding a new card 
-def add_new_card():
+def add_new_card(CURRENT_USER_ID):
     name = input('Cardholder Name: ')
     card_num = input('Card Number: ')
     card_num = card_num_check(card_num)
@@ -204,16 +212,14 @@ def add_new_card():
     return split_card_num
     
 # Function that checks if a user has a card on file, if not allows them to add one
-def card_on_file(order_number):
+def card_on_file(order_number, CURRENT_USER_ID):
     query = ('SELECT * FROM card_payment WHERE CustomerID = ' + '\'' + str(CURRENT_USER_ID) + '\'')
-    cursor.execute(query)
-    result = cursor.fetchall()
-    query_result = [list(i) for i in result]
+    query_result = run_query(query)
 
     # Check if there are any cards on file 
     if not query_result:
         print('You do not have any cards on file, please enter your card info: ')
-        split_card_num = add_new_card()
+        split_card_num = add_new_card(CURRENT_USER_ID)
         query = ('UPDATE orders SET CardUsed = ' + '\'' + str(split_card_num[3]) + '\' WHERE OrderID = ' + '\'' + str(order_number) + '\'')
     else:
         print('These are the last 4 digits of the cards you have on file: ')
@@ -221,7 +227,7 @@ def card_on_file(order_number):
             print(i+1, ')', query_result[i][5])                                                     # i + 1 so 0) will not be displyed to the user
         card_to_use = input('Would you like to use one of these cards? If so, just type the option number of the card ie. 1. If you would like to add a new card type \'new\'. ')
         if card_to_use == 'new' or card_to_use == 'New':
-            split_card_num = add_new_card()
+            split_card_num = add_new_card(CURRENT_USER_ID)
             query = ('UPDATE orders SET CardUsed = ' + '\'' + str(split_card_num[3]) + '\' WHERE OrderID = ' + '\'' + str(order_number) + '\'')
         else:
             card_to_use = int(card_to_use) - 1
@@ -234,9 +240,10 @@ def card_on_file(order_number):
     return True
 
 # Function to that drives the checkout 
-def checkout_(formatted_cart, total):
+def checkout_(formatted_cart, total, CURRENT_USER_ID, payment_method):
     # Get an random order number
     order_number  = random.randrange(2, 100000000)
+    paid = False
 
     # Create the order first 
     query = (
@@ -254,7 +261,11 @@ def checkout_(formatted_cart, total):
         cursor.execute(query)
     
     print('\n****** Payment ******\n')
-    paid = card_on_file(order_number)
+    if payment_method == 'Card':
+        paid = card_on_file(order_number, CURRENT_USER_ID)
+    elif payment_method == 'Cash':
+        query = ('UPDATE orders SET CardUsed = \'Cash\' WHERE OrderID = ' + '\'' + str(order_number) + '\'')
+        paid = True
 
     # If the order was paid then push changes to the database and empty the cart 
     if paid:
@@ -274,13 +285,39 @@ def detailed_history(history_):
 
     for i in range(len(items)):
         query = ('SELECT ItemID, BrickSize, BrickColor, BrickType, ItemType, SetName, SetPieceCount FROM items WHERE ItemID = ' + '\'' + str(items[i]) + '\'')
-        cursor.execute(query)
-        result = cursor.fetchall()
-        query_result = [list(i) for i in result]
+        query_result = run_query(query)
         item_details = result_parser(query_result, item_details) # Use this function to split up the query results 
 
     print(tabulate(item_details, details_headers))
 
+
+# Function to get the customers ID number from the database
+def get_customer_ID(phone_num):
+    customer_details = []
+    not_found = ''
+
+    CURRENT_USER_ID = ''
+
+    # Query the DB to check if the user has an account in the system, if so set the global user ID for this order
+    query = ('SELECT CustomerID FROM customer WHERE PhoneNumber = ' + '\'' + str(phone_num) + '\'')
+    query_result = run_query(query)
+
+    # If the number was not found ask if they wanna try another number or make a new account
+    if not query_result:
+        not_found = input('An account with that phone number does not exist. Would you like to try another phone number or make a new account? Type either \'new\' or \'other\': ')
+        not_found.lower()
+    else:
+        CURRENT_USER_ID = query_result[0][0]
+
+    if not_found == 'other':
+        phone_num = input('Enter new number to try: ')
+        get_customer_ID(phone_num)
+    elif not_found == 'new': 
+        register_user()
+        phone_num = input('Enter the number of the account: ')
+        get_customer_ID(phone_num)
+    else:
+        return CURRENT_USER_ID
 
 # Function to browse the current inventory
 def browse():
@@ -304,9 +341,7 @@ def search():
     query = select_query_builder(str(details[0]), str(details[1]))
     
     # Execute the query and save to list for formatted printing
-    cursor.execute(query)
-    query_result = cursor.fetchall()
-    search_results = [list(i) for i in query_result]
+    search_results = run_query(query)
 
     # Print the search results
     if not search_results:
@@ -342,12 +377,12 @@ def purchase():
     total = 0.00
     for i in range(len(formatted_cart)):
         total += float(formatted_cart[i][7]) * float(formatted_cart[i][8])
-    print('Cart total = $' + str(total))
+    print('Cart total = ${:.2f}'.format(total))
 
     # Ask the user if he is ready to checkout yet
     checkout = input('Would you like to checkout? y or n: ')
     if checkout == 'y':
-        paid = checkout_(formatted_cart, total)
+        paid = checkout_(formatted_cart, total, CURRENT_USER_ID, 'Card')
     else:
         paid = False 
 
@@ -364,9 +399,7 @@ def order_history():
 
     # Query the DB
     query = ('SELECT * FROM legostore.dbo.orders WHERE CustomerID = ' + '\'' + str(CURRENT_USER_ID) + '\'')
-    cursor.execute(query)
-    result = cursor.fetchall()
-    history = [list(i) for i in result]
+    history = run_query(query)
 
     # Display history if there have been any purchases
     if not history:
@@ -381,9 +414,7 @@ def order_history():
     if more_info == 'y':
         order_num = input('Please enter the order number you want more information about: ')
         query = ('SELECT * FROM legostore.dbo.order_items WHERE OrderID = ' + '\'' + str(order_num) + '\'')
-        cursor.execute(query)
-        result_ = cursor.fetchall()
-        history_ = [list(i) for i in result_]
+        history_ = run_query(query)
         
         if not history_:
             print("There were no orders matching that order number. Please try again. ")
@@ -394,5 +425,64 @@ def order_history():
     else: 
         return 
 
-    
+# Function that will handle an employee making a sell (most of the code is copied from the purchase function but with changes to the prompts)
+def sell():
+    # Get input on what they are selling
+    cart_items = []
+    formatted_cart = []
+    paid = False
 
+    # Loop getting input from the employee 
+    buyMore = True
+    while buyMore: 
+        show_inventory()
+        cart_items.append(input('Please enter the Item ID of the item you\'re selling: '))
+        cart_items.append(input('And the quantity: '))
+        cart_items[1] = in_stock_check(cart_items[0],cart_items[1]) # Check if in stock, if not update quantity
+        keep_buying = input('Would you like to add more to the cart? y or n:  ')
+        unformatted_cart.append(update_cart(cart_items))
+        if keep_buying == 'n':
+            buyMore = False
+        cart_items.clear()
+
+    # Format the queries into readable data for the user and print
+    formatted_cart = list_to_cart(unformatted_cart, formatted_cart)
+    print(tabulate(formatted_cart, headers, floatfmt=".2f") + '\n\n') 
+
+    # Calculate the cart total 
+    total = 0.00
+    for i in range(len(formatted_cart)):
+        total += float(formatted_cart[i][7]) * float(formatted_cart[i][8])
+    print('Cart total = ${:.2f}'.format(total))
+
+    # Ask the user if he is ready to checkout yet
+    checkout = input('Ready for checkout? y or n: ')
+    checkout.lower() 
+    if checkout == 'y':
+        has_account = input('Does the customer have an account on file? y or n: ')
+        if has_account == 'y':
+            phone_num = input('What is the customers phone number(enter with no spaces or hypens)? ')
+            CURRENT_USER_ID = get_customer_ID(phone_num)
+        elif has_account == 'n':
+            register_user()
+            phone_num = input('What is the customers phone number(enter with no spaces or hypens)? ')
+            CURRENT_USER_ID = get_customer_ID(phone_num)
+        else:  
+            print('Invalid input')
+        payment_method = input('Cash or Card? ')                        # Allow the user to pay either cash or card since they are in store
+        payment_method.lower()
+        if payment_method == 'card':
+            paid = checkout_(formatted_cart, total, CURRENT_USER_ID, 'Card')
+        elif payment_method == 'cash':
+            paid = checkout_(formatted_cart, total, CURRENT_USER_ID, 'Cash')
+        else:
+            print('Invalid input')
+    elif checkout == 'n':
+        paid = False
+    else: 
+        print('Invalid Input')
+
+    # Clear the cart if the last order was paid for 
+    if paid:
+        formatted_cart.clear()
+        unformatted_cart.clear()
