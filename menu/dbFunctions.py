@@ -354,6 +354,9 @@ def search():
 def purchase():
     cart_items = []
     formatted_cart = []
+    item_details = []
+    total = 0.00
+    i = 0
 
     # Loop getting input from the user on what they are looking to buy 
     buyMore = True
@@ -363,11 +366,35 @@ def purchase():
         cart_items.append(input('Please enter the Item ID of the item you\'d like to purchase: '))
         cart_items.append(input('And the quantity you want to purchase: '))
         cart_items[1] = in_stock_check(cart_items[0],cart_items[1]) # Check if in stock, if not update quantity
-        keep_buying = input('Would you like to add more to your cart? y or n:  ')
         unformatted_cart.append(update_cart(cart_items))
+
+        # Format the queries into readable data for the user and print
+        formatted_cart = list_to_cart(unformatted_cart, formatted_cart)
+        print(tabulate(formatted_cart, headers, floatfmt=".2f") + '\n\n') 
+
+        # Calculate the total price of the cart 
+        total += float(formatted_cart[i][7]) * float(formatted_cart[i][8])
+        i += 1
+        print('Cart total = ${:.2f}'.format(total))
+
+        # Make the user confirm this is the correct item
+        print('Are you sure you want to add this to the cart?')
+        query = ('SELECT ItemID, BrickSize, BrickColor, BrickType, SetName, SetPieceCount, ItemPrice FROM legostore.dbo.items WHERE ItemID = \'' + cart_items[0] + '\'')
+        item_details = run_query(query)
+        print(tabulate(item_details, headers, floatfmt='.2f'), '\nQuantity: ', cart_items[1])
+        add_to_cart = input('y or n?: ')
+        add_to_cart.lower()
+        if add_to_cart == 'n':
+            unformatted_cart.pop()
+            i -= 1
+
+        # Check if the user wants to add more to the card 
+        keep_buying = input('Would you like to add more to the cart? y or n:  ')
         if keep_buying == 'n':
             buyMore = False
         cart_items.clear()
+        formatted_cart.clear()
+
 
     # Format the queries into readable data for the user and print
     formatted_cart = list_to_cart(unformatted_cart, formatted_cart)
@@ -427,10 +454,11 @@ def order_history():
 
 # Function that will handle an employee making a sell (most of the code is copied from the purchase function but with changes to the prompts)
 def sell():
-    # Get input on what they are selling
     cart_items = []
     formatted_cart = []
     paid = False
+    total = 0.00
+    i = 0
 
     # Loop getting input from the employee 
     buyMore = True
@@ -439,48 +467,46 @@ def sell():
         cart_items.append(input('Please enter the Item ID of the item you\'re selling: '))
         cart_items.append(input('And the quantity: '))
         cart_items[1] = in_stock_check(cart_items[0],cart_items[1]) # Check if in stock, if not update quantity
-        keep_buying = input('Would you like to add more to the cart? y or n:  ')
         unformatted_cart.append(update_cart(cart_items))
+
+        # Format the queries into readable data for the user and print
+        formatted_cart = list_to_cart(unformatted_cart, formatted_cart)
+        print(tabulate(formatted_cart, headers, floatfmt=".2f") + '\n\n') 
+
+        # Calculate the total price of the cart 
+        total += float(formatted_cart[i][7]) * float(formatted_cart[i][8])
+        i += 1
+        print('Cart total = ${:.2f}'.format(total))
+
+        # Check if the user wants to add more to the card 
+        keep_buying = input('Would you like to add more to the cart? y or n:  ')
         if keep_buying == 'n':
             buyMore = False
         cart_items.clear()
-
-    # Format the queries into readable data for the user and print
-    formatted_cart = list_to_cart(unformatted_cart, formatted_cart)
-    print(tabulate(formatted_cart, headers, floatfmt=".2f") + '\n\n') 
-
-    # Calculate the cart total 
-    total = 0.00
-    for i in range(len(formatted_cart)):
-        total += float(formatted_cart[i][7]) * float(formatted_cart[i][8])
-    print('Cart total = ${:.2f}'.format(total))
+        formatted_cart.clear()
 
     # Ask the user if he is ready to checkout yet
-    checkout = input('Ready for checkout? y or n: ')
-    checkout.lower() 
-    if checkout == 'y':
-        has_account = input('Does the customer have an account on file? y or n: ')
-        if has_account == 'y':
-            phone_num = input('What is the customers phone number(enter with no spaces or hypens)? ')
-            CURRENT_USER_ID = get_customer_ID(phone_num)
-        elif has_account == 'n':
-            register_user()
-            phone_num = input('What is the customers phone number(enter with no spaces or hypens)? ')
-            CURRENT_USER_ID = get_customer_ID(phone_num)
-        else:  
-            print('Invalid input')
-        payment_method = input('Cash or Card? ')                        # Allow the user to pay either cash or card since they are in store
-        payment_method.lower()
-        if payment_method == 'card':
-            paid = checkout_(formatted_cart, total, CURRENT_USER_ID, 'Card')
-        elif payment_method == 'cash':
-            paid = checkout_(formatted_cart, total, CURRENT_USER_ID, 'Cash')
-        else:
-            print('Invalid input')
-    elif checkout == 'n':
-        paid = False
-    else: 
-        print('Invalid Input')
+    print('\n****** Checkout *******\n')
+    has_account = input('Does the customer have an account on file? y or n: ')
+    if has_account == 'y':
+        phone_num = input('What is the customers phone number(enter with no spaces or hypens)? ')
+        CURRENT_USER_ID = get_customer_ID(phone_num)
+    elif has_account == 'n':
+        register_user()
+        phone_num = input('What is the customers phone number(enter with no spaces or hypens)? ')
+        CURRENT_USER_ID = get_customer_ID(phone_num)
+    else:  
+        print('Invalid input')
+        
+    # Allow the user to pay either cash or card since they are in store
+    payment_method = input('Cash or Card? ')
+    payment_method.lower()
+    if payment_method == 'card':
+        paid = checkout_(formatted_cart, total, CURRENT_USER_ID, 'Card')
+    elif payment_method == 'cash':
+        paid = checkout_(formatted_cart, total, CURRENT_USER_ID, 'Cash')
+    else:
+        print('Invalid input')
 
     # Clear the cart if the last order was paid for 
     if paid:
