@@ -78,7 +78,7 @@ def main_loop():
         elif result[0] == "store" and result[1] == "sell" and INFO[0] == 'employee':
             dbFunctions.sell()
         elif result[0] == "store" and result[1] == "DBMgmt" and INFO[0] == 'employee':
-            print('DB Management')
+            dbFunctions.dbMangement()
         elif result[0] == "store" and result[1] == "sell" and INFO[0] != 'employee':
             print('YOU MUST BE LOGGED IN AS AN EMPLOYEE TO ACCESS THIS FEATURE')
         elif result[0] == "store" and result[1] == "DBMgmt" and INFO[0] != 'employee':
