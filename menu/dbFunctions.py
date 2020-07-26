@@ -299,7 +299,6 @@ def detailed_history(history_):
 
     print(tabulate(item_details, details_headers))
 
-
 # Function to get the customers ID number from the database
 def get_customer_ID(phone_num):
     customer_details = []
@@ -374,6 +373,16 @@ def new_employee(first, last, email):
     )
     cursor.execute(query)
     cnx.commit()
+
+# Function that will allow managers to delete an employee from the system
+def delete_employee(empID):
+    if empID == '1':
+        print('ERROR: CANNOT DELETE THE ADMIN USER')
+        return
+    query = ('DELETE FROM employees WHERE EmployeeID = \'' + str(empID) + '\'')
+    cursor.execute(query)
+    cnx.commit()
+    print('\n\nEmployee ', empID, ' has been deleted from the store database. \n')
 
 # Function to browse the current inventory
 def browse():
@@ -585,7 +594,7 @@ def dbMangement():
         new_employee(f_name, l_name, email)
     elif db_operation == '3':
         employee_id = input('Please enter the ID of the employee you are deleting from the system: ')
-
+        delete_employee(employee_id)
     else: 
         print('Invalid Input')
         
