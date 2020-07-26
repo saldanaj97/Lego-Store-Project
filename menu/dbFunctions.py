@@ -18,6 +18,7 @@ cursor = cnx.cursor()
 
 # Headers used for formatting the results from the queries
 headers = ['Item ID', 'Brick Size', 'Brick Color', 'Brick Type', 'Item Type', 'Set Name', 'Piece Count', 'Price $', 'Quantity']
+employee_headers = ['Employee ID', 'First Name', 'Last Name', 'Email']
 
 # Global variable that will be used to keep track of the users cart while making a purchase
 unformatted_cart = []
@@ -384,6 +385,13 @@ def delete_employee(empID):
     cnx.commit()
     print('\n\nEmployee ', empID, ' has been deleted from the store database. \n')
 
+# Function to view all employees working at a location 
+def view_employees():
+    query = ('SELECT EmployeeID, FirstName, LastName, Email FROM legoStore.dbo.employees')
+    employee_list = run_query(query)
+    print('\n\nNow displaying all employees from this store\n')
+    print(tabulate(employee_list, employee_headers))
+
 # Function to browse the current inventory
 def browse():
     show_inventory()
@@ -577,7 +585,7 @@ def dbMangement():
     # Prompt user asking what they want to do
     db_operation = input(
         '\n\nWhat would you like to do? You can choose from the following: \n'
-        '1) Update Inventory    2) Add Employee Info(Managers ONLY)     3) Delete Employee Info(Managers ONLY)\n'
+        '1) Update Inventory\n--- MANAGERS ONLY OPERATIONS BELOW --- \n2) Add Employee Info\n3) Delete Employee Info\n4) View Employees\n'
     )
 
     # Run the appropriate function based on the response from the user
@@ -595,6 +603,8 @@ def dbMangement():
     elif db_operation == '3':
         employee_id = input('Please enter the ID of the employee you are deleting from the system: ')
         delete_employee(employee_id)
+    elif db_operation == '4':
+        view_employees()
     else: 
         print('Invalid Input')
         
