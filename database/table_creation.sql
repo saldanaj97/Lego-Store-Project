@@ -61,9 +61,6 @@ CREATE TABLE employees (
     PRIMARY KEY(EmployeeID)
 )
 
-UPDATE items SET Quantity = Quantity + 1 WHERE ItemID = '1'
-UPDATE items SET Quantity = Quantity + 500 WHERE ItemID = '1'
-
 SELECT * FROM items;
 SELECT * FROM customer;
 SELECT * FROM orders;
