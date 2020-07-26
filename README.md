@@ -31,7 +31,7 @@ These can be installed by running the following commands:
    - pip3 install pyfiglet
    - pip3 install pytabby
 
-Once you have all these different modules installed, you can run the program by going into the menu folder within the lego-store-project file and running:
+Once you have all these different modules installed, you can run the program by going into the menu folder within the lego-store-project file and running
    'python3 app.py' 
 in the terminal. 
 
@@ -39,10 +39,10 @@ There are also test scripts that could be run to fill a SQL database with test v
 
 TEST USER INFO
 To run program with an admin account use the following information when asked to login:
-   Employee ID: 1 
-   Password: 1234
+   - Employee ID: 1 
+   - Password: 1234
 
 To run program with a test user that has a test card saved to the account, use the following information:
-   Email: TestCustomer 
-   Password: 1234
+   - Email: TestCustomer 
+   - Password: 1234
 
