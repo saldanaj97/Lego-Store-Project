@@ -22,6 +22,7 @@ employee_headers = ['Employee ID', 'First Name', 'Last Name', 'Email']
 
 # Global variable that will be used to keep track of the users cart while making a purchase
 unformatted_cart = []
+is_admin = False
 
 # Function that will run execute the query on the DB and return the results 
 def run_query(query):
@@ -55,6 +56,12 @@ def user_auth(info):
         if not user:
             print('\nAccount with those credentials not found. Please try again. \n')
             return False
+
+        # Check if the employee has admin privelages
+        if user[0][0] == '1':
+            is_admin = True
+        else:
+            is_admin = False
     elif info[0] == 'customer':
         cursor.execute('SELECT CustomerID FROM legoStore.dbo.customer WHERE Email = ' + '\'' + str(info[1]) + '\'' + 'AND UserPassword = ' + '\'' + str(info[2]) + '\'')
         query_result = cursor.fetchall()
@@ -593,17 +600,17 @@ def dbMangement():
         item_to_update = input('Enter the Item ID of the item you want to update: ')
         new_quantity = input('Enter the quantity you are adding to the inventory: ')
         update_quantity(item_to_update, new_quantity)
-    elif db_operation == '2':
+    elif db_operation == '2' and is_admin:
         print('Fill in the details of the employee you want to add')
         f_name = input('First name: ')
         l_name = input('Last name: ')
         email = input('Email: ')
         print('\n\nAn email will be sent to the employee containing their employee ID along with a link to make a password.\n\n')
         new_employee(f_name, l_name, email)
-    elif db_operation == '3':
+    elif db_operation == '3' and is_admin:
         employee_id = input('Please enter the ID of the employee you are deleting from the system: ')
         delete_employee(employee_id)
-    elif db_operation == '4':
+    elif db_operation == '4' and is_admin:
         view_employees()
     else: 
         print('Invalid Input')
