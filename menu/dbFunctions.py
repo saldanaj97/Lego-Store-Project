@@ -524,8 +524,8 @@ def order_history():
         if not history_:
             print("There were no orders matching that order number. Please try again. ")
         else:
-            print('Purchase history for order number: ', order_num, '\n\n')
-            print(tabulate(history_, order_item_headers, floatfmt='.2f'), '\n')
+            print('Purchase history for order number: ', order_num, '\n')
+            print(tabulate(history_, order_item_headers, floatfmt='.2f'), '\n\n')
             detailed_history(history_)
     else: 
         return 
