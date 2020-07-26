@@ -35,6 +35,7 @@ Once you have all these different modules installed, you can run the program by 
    'python3 app.py' 
 in the terminal. 
 
+There are also test scripts that could be run to fill a SQL database with test values in the database folder within in the lego-store-project folder. 
 
 TEST USER INFO
 To run program with an admin account use the following information when asked to login:
