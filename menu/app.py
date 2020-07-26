@@ -100,8 +100,8 @@ def main_loop():
         elif result[0] == "online" and result[1] == "purchaseHistory" and INFO[0] != 'customer':
             print('YOU MUST BE LOGGED IN AS A CUSTOMER TO ACCESS THIS FEATURE')
         elif result[1] == "quit":
+            dbFunctions.update_DB()
             quit_early = True
-
 
 if __name__ == "__main__":
     main_loop()

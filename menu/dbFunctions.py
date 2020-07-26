@@ -20,7 +20,7 @@ cursor = cnx.cursor()
 headers = ['Item ID', 'Brick Size', 'Brick Color', 'Brick Type', 'Item Type', 'Set Name', 'Piece Count', 'Price $', 'Quantity']
 employee_headers = ['Employee ID', 'First Name', 'Last Name', 'Email']
 
-# Global variable that will be used to keep track of the users cart while making a purchase
+# Global variable that will be used to keep track of the users
 unformatted_cart = []
 is_admin = False
 
@@ -95,7 +95,6 @@ def register_user():
     )
 
     # Made sure command gets executed so account gets created in the DB
-    cnx.commit()
     print('\nAccount Created. \n')
 
 # Function that queries the DB to show store inventory 
@@ -256,6 +255,12 @@ def card_on_file(order_number, CURRENT_USER_ID):
     else:
         print('Invalid input')
 
+# Function to update the inventory once the purchase has been made
+def subtract_from_inventory(formatted_cart):
+    for i in range(len(formatted_cart)):
+        query = update_query_builder(formatted_cart[i][0], formatted_cart[i][8], '-')
+        cursor.execute(query)
+
 # Function to that drives the checkout 
 def checkout_(formatted_cart, total, CURRENT_USER_ID, payment_method):
     # Get an random order number
@@ -281,11 +286,13 @@ def checkout_(formatted_cart, total, CURRENT_USER_ID, payment_method):
     if payment_method == 'Card':
         paid = card_on_file(order_number, CURRENT_USER_ID)
     elif payment_method == 'Cash':
+        subtract_from_inventory(formatted_cart)
         query = ('UPDATE orders SET CardUsed = \'Cash\' WHERE OrderID = ' + '\'' + str(order_number) + '\'')
         paid = True
 
     # If the order was paid then push changes to the database and empty the cart 
     if paid:
+        subtract_from_inventory(formatted_cart)
         print('\n\n****** Your order has been placed. Thank you for your purchase! ******\n\n')
         return True
         
@@ -369,7 +376,6 @@ def update_quantity(item_to_update, new_quantity):
     else:
         query = update_query_builder(item_to_update, new_quantity, '+')
         cursor.execute(query)
-        cnx.commit()
 
 # Function that will allow managers to add a new employee to the databse
 def new_employee(first, last, email):
@@ -380,7 +386,6 @@ def new_employee(first, last, email):
         'VALUES (\'' + str(emp_id) + '\', \'' + str(first) + '\', \'' + str(last) + '\', \'' + str(email) + '\', \'' + 'NONE\')'
     )
     cursor.execute(query)
-    cnx.commit()
 
 # Function that will allow managers to delete an employee from the system
 def delete_employee(empID):
@@ -389,7 +394,6 @@ def delete_employee(empID):
         return
     query = ('DELETE FROM employees WHERE EmployeeID = \'' + str(empID) + '\'')
     cursor.execute(query)
-    cnx.commit()
     print('\n\nEmployee ', empID, ' has been deleted from the store database. \n')
 
 # Function to view all employees working at a location 
@@ -615,3 +619,8 @@ def dbMangement():
     else: 
         print('Invalid Input')
         
+# Function that runs the commit function and closes the connection after all changes have occured in the DB
+def update_DB():
+    cnx.commit()
+    cursor.close()
+    cnx.close()
