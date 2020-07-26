@@ -193,10 +193,13 @@ VALUES ('100005', '', '', '', 'Set', 'New York Set', '10293', '500.00', '5')
 INSERT INTO items (ItemID ,BrickSize, BrickColor, BrickType, ItemType, SetName, SetPieceCount, ItemPrice, Quantity)
 VALUES ('100007', '', '', '', '', 'Set', 'Toronto Set', '10982', '2', '500.00', '5')
 
-
 -- ADD AN ADMIN EMPLOYEE USER FOR TESTING/ADDING EMPLOYEES TO THE TABLE
 INSERT INTO employees (EmployeeID, FirstName, LastName, Email, EmpPassword)
 VALUES ('00001', 'ADMIN', 'USER', 'ADMINUSER', '1234')
+
+-- ADD A TEST EMPLOYEE USER WITH NO ADMIN RIGHTS
+INSERT INTO employees (EmployeeID, FirstName, LastName, Email, EmpPassword)
+VALUES ('00002', 'Test', 'Emp', 'TestEmp', '1234')
 
 -- ADD A TEST USER 
 INSERT INTO customer (CustomerID, FirstName, LastName, PhoneNumber, Email, HomeAddress, UserPassword)

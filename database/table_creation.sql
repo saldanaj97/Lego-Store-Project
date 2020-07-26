@@ -5,7 +5,7 @@ CREATE TABLE items (
     BrickType VARCHAR(255),
     ItemType varchar(10) NOT NULL, 
     SetName varchar(255),
-    SetPieceCount int, 
+    SetPieceCount varchar(255), 
     ItemPrice DECIMAL(10,2) NOT NULL,
     Quantity int NOT NULL, 
     PRIMARY KEY(ItemID)
@@ -60,6 +60,9 @@ CREATE TABLE employees (
     EmpPassword varchar(255),
     PRIMARY KEY(EmployeeID)
 )
+
+UPDATE items SET Quantity = Quantity + 1 WHERE ItemID = '1'
+UPDATE items SET Quantity = Quantity + 500 WHERE ItemID = '1'
 
 SELECT * FROM items;
 SELECT * FROM customer;
