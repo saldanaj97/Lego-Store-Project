@@ -1,3 +1,5 @@
+CREATE DATABASE legoStore;
+
 CREATE TABLE items (
     ItemID int NOT NULL,
     BrickSize varchar(4),
